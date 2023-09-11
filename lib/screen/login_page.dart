@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class LoginPage extends StatelessWidget {
   @override
@@ -23,6 +24,7 @@ class LoginForm extends StatefulWidget {
 class _LoginFormState extends State<LoginForm> {
   TextEditingController _idController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
+  static final storage = FlutterSecureStorage();
 
   void _login(String id, String password, BuildContext context) async {
     // String url = 'http://15.165.151.223:3000/users/login';
@@ -41,11 +43,20 @@ class _LoginFormState extends State<LoginForm> {
       http.Response response = await http.post(Uri.parse(url),
           headers: headers, body: json.encode(body));
 
-
       if (response.statusCode == 200) {
         // 로그인 성공
-        print("로그인 성공 ${response.body}");
+        // HTTP 응답 헤더 데이터
+        Map<String, String> headers = response.headers;
+
+        // refreshtoken 값 추출
+        String? refreshToken = headers['refreshtoken']?.replaceFirst('bearer ', "");
+        String? accessToken = headers['authorization']?.replaceFirst('bearer ', "");
+
+        await storage.write(key: 'refreshToken', value: refreshToken);
+        await storage.write(key: 'accessToken', value: accessToken);
         _showDialog('로그인 성공', '환영합니다, $id님!');
+        print("r스토리지 : ${await storage.read(key: 'refreshToken')}");
+        print("a스토리지 : ${await storage.read(key: 'accessToken')}");
         // 로그인 성공 시 처리할 로직 추가
         // 예: 홈 페이지로 이동 또는 다른 작업 수행
       } else if (response.statusCode == 401) {
@@ -59,6 +70,40 @@ class _LoginFormState extends State<LoginForm> {
       }
     } catch (e) {
       print("트라이문 오류");
+      _showDialog('오류', '서버와 통신 중에 오류가 발생했습니다.');
+    }
+  }
+
+  void _logout(BuildContext context) async {
+    String url = 'http://10.0.2.2:3000/users/logout';
+    String? refreshToken = await storage.read(key: 'refreshToken');
+    String? accessToken = await storage.read(key: 'accessToken');
+
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'bearer ${accessToken}',
+      'refreshToken': 'bearer ${refreshToken}',
+    };
+
+    try {
+      http.Response response = await http.get(Uri.parse(url),
+          headers: headers);
+      storage.delete(key: 'refreshToken');
+      storage.delete(key: 'accessToken');
+
+      if (response.statusCode == 200) {
+        _showDialog('로그아웃 성공', '안녕히가세요!');
+      } else if (response.statusCode == 401) {
+        // 로그인 실패
+        print("로그아웃 실패");
+        _showDialog('로그아웃 실패', '아이디 또는 비밀번호가 일치하지 않습니다.');
+      } else {
+        // 기타 오류
+        print("로그아웃 실패2 ${response.statusCode}");
+        _showDialog('오류', '로그아웃 중에 오류가 발생했습니다.');
+      }
+    } catch (e) {
+      print("트라이문 오류${e}");
       _showDialog('오류', '서버와 통신 중에 오류가 발생했습니다.');
     }
   }
@@ -170,6 +215,22 @@ class _LoginFormState extends State<LoginForm> {
                   child: Text('로그인', style: TextStyle(color: Colors.white),),
                 ),
               ),
+              SizedBox(
+                width: 300, // 원하는 너비로 설정
+                child: ElevatedButton(
+                  onPressed: () {
+                    _logout(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: Size(double.infinity, 48), // 버튼의 최소 너비를 설정
+                    primary: Color(0xFF143386), // 버튼의 배경색을 회색으로 설정
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                  child: Text('로그아웃', style: TextStyle(color: Colors.white),),
+                ),
+              ),
               SizedBox(height: 30),
               TextButton(
                 onPressed: () {
@@ -201,7 +262,6 @@ class _LoginFormState extends State<LoginForm> {
       ),
     );
   }
-
 }
 
 
