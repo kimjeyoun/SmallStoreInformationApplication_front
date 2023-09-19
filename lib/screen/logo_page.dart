@@ -34,7 +34,12 @@ class _LogoPageState extends State<LogoPage> {
                 Text(
                   '우리 동네 숨은 가게,\n어디있샵',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+                  style: TextStyle(
+                    fontFamily: 'Sandoll',
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white
+                  ),
                 ),
               ],
             ),
@@ -52,9 +57,27 @@ class _LogoPageState extends State<LogoPage> {
                   borderRadius: BorderRadius.circular(0.0),
                 ),
               ),
-              child: Text(
-                '다른 방법으로 로그인',
-                style: TextStyle(color: Colors.white, decoration: TextDecoration.underline),
+              child: Opacity(
+                opacity: 0.8,
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border(
+                        bottom: BorderSide(color: Colors.white)
+                    ),
+                  ),
+                  child: Opacity(
+                    opacity: 0.8,
+                    child: Text(
+                      '다른 방법으로 로그인',
+                      style: TextStyle(
+                        fontFamily: 'Sandoll',
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
@@ -101,7 +124,12 @@ class _LogoPageState extends State<LogoPage> {
               ),
               child: Text(
                 '카카오계정으로 시작하기',
-                style: TextStyle(color: Colors.black),
+                style: TextStyle(
+                  fontFamily: 'Sandoll',
+                  fontWeight: FontWeight.w600,
+                  fontSize: 11,
+                  color: Color(0xFF533B1C),
+                ),
               ),
             ),
           ),

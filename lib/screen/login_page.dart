@@ -48,24 +48,18 @@ class _LoginFormState extends State<LoginForm> {
         // HTTP 응답 헤더 데이터
         Map<String, String> headers = response.headers;
 
-        // refreshtoken 값 추출
+        // token 값 추출
         String? refreshToken = headers['refreshtoken']?.replaceFirst('bearer ', "");
         String? accessToken = headers['authorization']?.replaceFirst('bearer ', "");
 
         await storage.write(key: 'refreshToken', value: refreshToken);
         await storage.write(key: 'accessToken', value: accessToken);
-        _showDialog('로그인 성공', '환영합니다, $id님!');
-        print("r스토리지 : ${await storage.read(key: 'refreshToken')}");
-        print("a스토리지 : ${await storage.read(key: 'accessToken')}");
+        _showDialog('로그인 성공', '환영합니다!');
         // 로그인 성공 시 처리할 로직 추가
         // 예: 홈 페이지로 이동 또는 다른 작업 수행
-      } else if (response.statusCode == 401) {
-        // 로그인 실패
-        print("로그인 실패");
-        _showDialog('로그인 실패', '아이디 또는 비밀번호가 일치하지 않습니다.');
       } else {
         // 기타 오류
-        print("로그인 실패2 ${response.statusCode}");
+        print("로그인 실패1 ${response.statusCode}");
         _showDialog('오류', '로그인 중에 오류가 발생했습니다.');
       }
     } catch (e) {
@@ -79,29 +73,24 @@ class _LoginFormState extends State<LoginForm> {
     String? refreshToken = await storage.read(key: 'refreshToken');
     String? accessToken = await storage.read(key: 'accessToken');
 
-    Map<String, String> headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'bearer ${accessToken}',
-      'refreshToken': 'bearer ${refreshToken}',
-    };
-
     try {
-      http.Response response = await http.get(Uri.parse(url),
-          headers: headers);
-      storage.delete(key: 'refreshToken');
-      storage.delete(key: 'accessToken');
+      http.Response response = await http.get(
+          Uri.parse(url),
+          headers: {
+            'Authorization': 'bearer $accessToken',
+            'refreshToken': 'bearer $refreshToken',
+          });
+
+      //storage.delete(key: 'refreshToken');
+      //storage.delete(key: 'accessToken');
 
       if (response.statusCode == 200) {
         _showDialog('로그아웃 성공', '안녕히가세요!');
-      } else if (response.statusCode == 401) {
-        // 로그인 실패
-        print("로그아웃 실패");
-        _showDialog('로그아웃 실패', '아이디 또는 비밀번호가 일치하지 않습니다.');
       } else {
-        // 기타 오류
-        print("로그아웃 실패2 ${response.statusCode}");
-        _showDialog('오류', '로그아웃 중에 오류가 발생했습니다.');
-      }
+        // 로그인 실패
+        print("로그아웃 실패 ${response.statusCode}");
+        _showDialog('로그아웃 실패', 'error');
+      };
     } catch (e) {
       print("트라이문 오류${e}");
       _showDialog('오류', '서버와 통신 중에 오류가 발생했습니다.');
@@ -143,7 +132,12 @@ class _LoginFormState extends State<LoginForm> {
               SizedBox(height: 150),
               Text(
                 '이미 회원이신가요?',
-                style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontFamily: 'Sandoll',
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                  fontSize: 20,
+                ),
               ),
               SizedBox(height: 40),
               Align(
@@ -155,9 +149,10 @@ class _LoginFormState extends State<LoginForm> {
                     decoration: InputDecoration(
                       labelText: '아이디 또는 이메일',
                       labelStyle: TextStyle(
+                        fontFamily: 'Sandoll',
                         fontSize: 13, // 원하는 폰트 크기로 조정
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFFCACACA), // 원하는 색상으로 조정
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFFB8B8B8), // 원하는 색상으로 조정
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
@@ -180,9 +175,10 @@ class _LoginFormState extends State<LoginForm> {
                     decoration: InputDecoration(
                       labelText: '비밀번호',
                       labelStyle: TextStyle(
+                        fontFamily: 'Sandoll',
                         fontSize: 13, // 원하는 폰트 크기로 조정
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFFCACACA), // 원하는 색상으로 조정
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFFB8B8B8), // 원하는 색상으로 조정
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
@@ -212,23 +208,13 @@ class _LoginFormState extends State<LoginForm> {
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                   ),
-                  child: Text('로그인', style: TextStyle(color: Colors.white),),
-                ),
-              ),
-              SizedBox(
-                width: 300, // 원하는 너비로 설정
-                child: ElevatedButton(
-                  onPressed: () {
-                    _logout(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: Size(double.infinity, 48), // 버튼의 최소 너비를 설정
-                    primary: Color(0xFF143386), // 버튼의 배경색을 회색으로 설정
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+                  child: Text('로그인', style: TextStyle(
+                      fontFamily: 'Sandoll',
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                      color: Colors.white,
                     ),
                   ),
-                  child: Text('로그아웃', style: TextStyle(color: Colors.white),),
                 ),
               ),
               SizedBox(height: 30),
@@ -240,13 +226,26 @@ class _LoginFormState extends State<LoginForm> {
                   padding: EdgeInsets.zero,
                   alignment: Alignment.center,
                 ),
-                child: Text(
-                  '쉽고 빠른 회원가입',
-                  style: TextStyle(
-                      color: Color(0xFFCACACA),
-                      decoration: TextDecoration.underline,
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold
+                child: Opacity(
+                  opacity: 0.8,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border(
+                          bottom: BorderSide(color: Colors.white)
+                      ),
+                    ),
+                    child: Opacity(
+                      opacity: 0.8,
+                      child: Text(
+                        '쉽고 빠른 회원가입',
+                        style: TextStyle(
+                          fontFamily: 'Sandoll',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
