@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:where_shop_project/screen/login_page.dart';
-import 'package:where_shop_project/screen/register_page.dart';
 import 'package:where_shop_project/screen/user_type_selection_page.dart';
 import 'package:where_shop_project/screen/logo_page.dart';
 import 'package:where_shop_project/screen/kakao_map_page.dart';
@@ -23,7 +22,6 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => LogoPage(),
         '/login' : (context) => LoginPage(),
-        '/register': (context) => RegisterPage(),
         '/selection':  (context) => UserTypeSelectionPage(),
         '/map': (context) => KakaoMapPage(),
       },

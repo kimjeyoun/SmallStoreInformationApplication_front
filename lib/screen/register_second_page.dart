@@ -1,42 +1,29 @@
-import 'dart:js_interop';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:where_shop_project/screen/email_verify.dart';
 
-class RegisterForm extends StatefulWidget {
-  final String data;
+class SecondRegisterForm extends StatefulWidget {
+  final String id;
+  final String password;
+  final String userroll;
 
-  const RegisterForm(this.data);
+  const SecondRegisterForm(this.id, this.password, this.userroll);
 
   @override
-  _RegisterFormState createState() => _RegisterFormState();
+  _SecondRegisterFormState createState() => _SecondRegisterFormState();
 }
 
-class _RegisterFormState extends State<RegisterForm> {
+class _SecondRegisterFormState extends State<SecondRegisterForm> {
   // FocusNode 변수
   FocusNode _emailFocusNode = FocusNode();
   bool _showLabel_email = true;
-
-  FocusNode _passwordFocusNode = FocusNode();
-  bool _showLabel_password = true;
-
-  FocusNode _passwordVerificationFocusNode = FocusNode();
-  bool _showLabel_password_Verification = true;
-
-  FocusNode _idFocusNode = FocusNode();
-  bool _showLabel_id = true;
 
   FocusNode _addressFocusNode = FocusNode();
   bool _showLabel_address = true;
 
   FocusNode _nicknameFocusNode = FocusNode();
   bool _showLabel_nickname = true;
-
-  // 변수
-  bool passwordsMatch = false;
-  String passwordMatchText = '';
-  bool _passwordEdited = false;
 
   // 이벤트 초기화
   @override
@@ -45,23 +32,7 @@ class _RegisterFormState extends State<RegisterForm> {
     _emailFocusNode.addListener(() {
       setState(() {
         _showLabel_email =
-            !_emailFocusNode.hasFocus; // 포커스가 없을 때에만 _showLabel을 true로 설정
-      });
-    });
-    _passwordFocusNode.addListener(() {
-      setState(() {
-        _showLabel_password = !_passwordFocusNode.hasFocus;
-      });
-    });
-    _passwordVerificationFocusNode.addListener(() {
-      setState(() {
-        _showLabel_password_Verification =
-            !_passwordVerificationFocusNode.hasFocus;
-      });
-    });
-    _idFocusNode.addListener(() {
-      setState(() {
-        _showLabel_id = !_idFocusNode.hasFocus;
+        !_emailFocusNode.hasFocus; // 포커스가 없을 때에만 _showLabel을 true로 설정
       });
     });
     _addressFocusNode.addListener(() {
@@ -74,43 +45,16 @@ class _RegisterFormState extends State<RegisterForm> {
         _showLabel_nickname = !_nicknameFocusNode.hasFocus;
       });
     });
-
-    _passwordController.addListener(checkPasswordMatch);
-    _passwordController.addListener(() {
-      setState(() {
-        _passwordEdited = true;
-      });
-    });
-    _passwordVerificationController.addListener(checkPasswordMatch);
   }
 
   // 함수
-  void checkPasswordMatch() {
-    setState(() {
-      if(_passwordController.text.isNotEmpty &&
-          _passwordVerificationController.text.isNotEmpty) {
-        passwordsMatch =
-            _passwordController.text == _passwordVerificationController.text;
-        passwordMatchText =
-        passwordsMatch ? '비밀번호가 일치합니다.' : '비밀번호가 일치하지 않습니다.';
-      } else {
-        passwordMatchText = '';
-      }
-    });
-  }
 
   @override
   void dispose() {
-    _passwordController.removeListener(checkPasswordMatch);
-    _passwordVerificationController.removeListener(checkPasswordMatch);
     super.dispose();
   }
 
   // 컨트롤러
-  TextEditingController _idController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
-  TextEditingController _passwordVerificationController =
-      TextEditingController();
   TextEditingController _emailController = TextEditingController();
   TextEditingController _addressController = TextEditingController();
   TextEditingController _nicknameController = TextEditingController();
@@ -161,36 +105,21 @@ class _RegisterFormState extends State<RegisterForm> {
     );
   }
 
-  bool _validatePassword(String value) {
-    if (value.isEmpty) {
-      setState(() {});
-      return false;
-    }
-
-    RegExp regex = RegExp(r'^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,12}$');
-
-    if (!regex.hasMatch(value)) {
-      return false;
-    } else {
-      return true;
-    }
-  }
-
   // 위젯 빌드 시작
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
-        if (_passwordEdited) {
-          _validatePassword(_passwordController.text);
-        }
       },
       child: Scaffold(
           backgroundColor: Color(0xFF4876F2),
           body: SingleChildScrollView(
               child: Container(
-                  width: MediaQuery.of(context).size.width * 1.0,
+                  width: MediaQuery
+                      .of(context)
+                      .size
+                      .width * 1.0,
                   child: Column(
                     children: [
                       Padding(
@@ -199,8 +128,9 @@ class _RegisterFormState extends State<RegisterForm> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
+                            SizedBox(height: 70),
                             Text(
-                              '정보를 입력해주세요',
+                              '추가 정보를 입력해주세요',
                               style: TextStyle(
                                 fontFamily: 'Sandoll',
                                 color: Colors.white,
@@ -209,223 +139,115 @@ class _RegisterFormState extends State<RegisterForm> {
                               ),
                             ),
 
-                            SizedBox(height: 30),
-                            // id TextField
-                            TextField(
-                              focusNode: _idFocusNode,
-                              controller: _idController,
-                              onTap: () {
-                                setState(() {
-                                  _showLabel_id = false;
-                                });
-                              },
-                              style: TextStyle(fontSize: 13),
-                              decoration: InputDecoration(
-                                labelText:
-                                _showLabel_id ? '아이디' : null,
-                                labelStyle: TextStyle(
-                                  fontFamily: 'Sandoll',
-                                  fontSize: 13,
-                                  color: Color(0xFFA7BAD8).withOpacity(0.5),
-                                  fontWeight: FontWeight.w600,
-                                ),
-                                contentPadding: EdgeInsets.all(0),
-                                isDense: true,
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Colors.white),
-                                ),
-                                focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Colors.white),
-                                ),
-                              ),
-                            ),
-
-                            SizedBox(height: 20),
-
-                            // pw TextFiel
-                            TextField(
-                              focusNode: _passwordFocusNode,
-                              controller: _passwordController,
-                              style: TextStyle(fontSize: 13),
-                              onTap: () {
-                                setState(() {
-                                  _showLabel_password = false;
-                                });
-                              },
-                              onChanged: _validatePassword,
-                              decoration: InputDecoration(
-                                labelText: _showLabel_password ? '비밀번호' : null,
-                                labelStyle: TextStyle(
-                                  fontFamily: 'Sandoll',
-                                  fontSize: 13,
-                                  color: Color(0xFFA7BAD8).withOpacity(0.5),
-                                  fontWeight: FontWeight.w600,
-                                ),
-
-                                contentPadding: EdgeInsets.all(0),
-                                isDense: true,
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white),
-                                ),
-                                focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white),
-                                ),
-                              ),
-                              obscureText: true,
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(top: 5),
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  '8~12자리 영문과 숫자, 특수문자를 조합하여 입력해 주세요.',
-                                  style: TextStyle(
-                                    fontSize: 9,
-                                    color: Color(0xFFD1D9CF),
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                            ),
-
-                            SizedBox(height: 20),
-
-                            // pw verification TextField
-                            TextField(
-                              focusNode: _passwordVerificationFocusNode,
-                              controller: _passwordVerificationController,
-                              onTap: () {
-                                setState(() {
-                                  _showLabel_password_Verification = false;
-                                });
-                              },
-                              style: TextStyle(fontSize: 18),
-                              decoration: InputDecoration(
-                                labelText: _showLabel_password_Verification
-                                    ? '비밀번호 확인'
-                                    : null,
-                                labelStyle: TextStyle(
-                                  fontSize: 16,
-                                  color: Color(0xFFA7BAD8),
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                contentPadding: EdgeInsets.all(0),
-                                isDense: true,
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white),
-                                ),
-                                focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white),
-                                ),
-                              ),
-                              obscureText: true,
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(top: 5),
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  passwordMatchText,
-                                  style: TextStyle(
-                                    fontSize: 9,
-                                    color: Color(0xFFD1D9CF),
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                            ),
+                            SizedBox(height: 50),
 
                             // email TextField
                             Row(
                               children: [
                                 Flexible(
                                     child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    SizedBox(height: 20),
-                                    Stack(
-                                      alignment: Alignment.centerRight,
+                                      crossAxisAlignment: CrossAxisAlignment
+                                          .center,
                                       children: [
-                                        TextField(
-                                          focusNode: _emailFocusNode,
-                                          controller: _emailController,
-                                          onTap: () {
-                                            setState(() {
-                                              _showLabel_email = false;
-                                            });
-                                          },
-                                          style: TextStyle(fontSize: 18),
-                                          decoration: InputDecoration(
-                                            labelText:
-                                                _showLabel_email ? '이메일' : null,
-                                            labelStyle: TextStyle(
-                                              fontSize: 16,
-                                              color: Color(0xFFA7BAD8),
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                            contentPadding: EdgeInsets.all(0),
-                                            isDense: true,
-                                            enabledBorder: UnderlineInputBorder(
-                                              borderSide: BorderSide(
-                                                  color: Colors.white),
-                                            ),
-                                            focusedBorder: UnderlineInputBorder(
-                                              borderSide: BorderSide(
-                                                  color: Colors.white),
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          width: 130,
-                                          height: 30,
-                                          padding: EdgeInsets.only(left: 10.0),
-                                          decoration: BoxDecoration(
-                                            color: Color(0xFF284FB8),
-                                          ),
-                                          child: DropdownButton<String>(
-                                            value: _selectedDomain,
-                                            onChanged: (String? newValue) {
-                                              if (newValue != null) {
+                                        SizedBox(height: 20),
+                                        Stack(
+                                          alignment: Alignment.centerRight,
+                                          children: [
+                                            TextField(
+                                              focusNode: _emailFocusNode,
+                                              controller: _emailController,
+                                              onTap: () {
                                                 setState(() {
-                                                  _selectedDomain = newValue;
+                                                  _showLabel_email = false;
                                                 });
-                                              }
-                                            },
-                                            items: _domainOptions
-                                                .map<DropdownMenuItem<String>>(
-                                              (String domain) {
-                                                return DropdownMenuItem<String>(
-                                                  value: domain,
-                                                  child: Container(
-                                                    child: Text(
-                                                      domain,
-                                                      style: TextStyle(
-                                                          color: Colors.white),
-                                                    ),
-                                                  ),
-                                                );
                                               },
-                                            ).toList(),
-                                            underline: SizedBox.shrink(),
-                                            icon: const Icon(
-                                                Icons.arrow_drop_down
+                                              style: TextStyle(fontSize: 13),
+                                              decoration: InputDecoration(
+                                                labelText:
+                                                _showLabel_email ? '이메일' : null,
+                                                labelStyle: TextStyle(
+                                                  fontFamily: 'Sandoll',
+                                                  fontSize: 13,
+                                                  color: Colors.white
+                                                      .withOpacity(0.5),
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                                contentPadding: EdgeInsets.all(
+                                                    0),
+                                                isDense: true,
+                                                enabledBorder: UnderlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                      color: Colors.white),
+                                                ),
+                                                focusedBorder: UnderlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                      color: Colors.white),
+                                                ),
+                                              ),
                                             ),
-                                            iconSize: 26,
-                                            iconDisabledColor: Color(0xFFD4DBEE),
-                                            iconEnabledColor: Color(0xFFD4DBEE),
-                                            dropdownColor: Color(0xFF284FB8),
-                                          ),
+                                            Container(
+                                              width: 130,
+                                              height: 30,
+                                              padding: EdgeInsets.only(
+                                                  left: 10.0),
+                                              decoration: BoxDecoration(
+                                                color: Color(0xFF284FB8),
+                                              ),
+                                              child: DropdownButton<String>(
+                                                value: _selectedDomain,
+                                                onChanged: (String? newValue) {
+                                                  if (newValue != null) {
+                                                    setState(() {
+                                                      _selectedDomain =
+                                                          newValue;
+                                                    });
+                                                  }
+                                                },
+                                                items: _domainOptions
+                                                    .map<
+                                                    DropdownMenuItem<String>>(
+                                                      (String domain) {
+                                                    return DropdownMenuItem<
+                                                        String>(
+                                                      value: domain,
+                                                      child: Container(
+                                                        child: Text(
+                                                          domain,
+                                                          style: TextStyle(
+                                                            fontFamily: 'Sandoll',
+                                                            fontSize: 13,
+                                                            color: Colors.white
+                                                                .withOpacity(
+                                                                0.5),
+                                                            fontWeight: FontWeight
+                                                                .w600,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
+                                                ).toList(),
+                                                underline: SizedBox.shrink(),
+                                                icon: const Icon(
+                                                    Icons.arrow_drop_down
+                                                ),
+                                                iconSize: 26,
+                                                iconDisabledColor: Color(
+                                                    0xFFD4DBEE),
+                                                iconEnabledColor: Color(
+                                                    0xFFD4DBEE),
+                                                dropdownColor: Color(
+                                                    0xFF284FB8),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ],
-                                    ),
-                                  ],
-                                )),
+                                    )),
                               ],
                             ),
 
-                            SizedBox(height: 30),
+                            SizedBox(height: 40),
                             // address TextField
                             TextField(
                               focusNode: _addressFocusNode,
@@ -440,9 +262,10 @@ class _RegisterFormState extends State<RegisterForm> {
                                 labelText:
                                 _showLabel_address ? '주소' : null,
                                 labelStyle: TextStyle(
-                                  fontSize: 16,
-                                  color: Color(0xFFA7BAD8),
-                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Sandoll',
+                                  fontSize: 13,
+                                  color: Colors.white.withOpacity(0.5),
+                                  fontWeight: FontWeight.w600,
                                 ),
                                 contentPadding: EdgeInsets.all(0),
                                 isDense: true,
@@ -457,7 +280,8 @@ class _RegisterFormState extends State<RegisterForm> {
                               ),
                             ),
 
-                            SizedBox(height: 30),
+                            SizedBox(height: 20),
+
                             // nickname TextField
                             TextField(
                               focusNode: _nicknameFocusNode,
@@ -472,9 +296,10 @@ class _RegisterFormState extends State<RegisterForm> {
                                 labelText:
                                 _showLabel_nickname ? '닉네임' : null,
                                 labelStyle: TextStyle(
-                                  fontSize: 16,
-                                  color: Color(0xFFA7BAD8),
-                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Sandoll',
+                                  fontSize: 13,
+                                  color: Colors.white.withOpacity(0.5),
+                                  fontWeight: FontWeight.w600,
                                 ),
                                 contentPadding: EdgeInsets.all(0),
                                 isDense: true,
@@ -494,29 +319,36 @@ class _RegisterFormState extends State<RegisterForm> {
                       ),
 
                       Container(
-                        width: MediaQuery.of(context).size.width * 0.8,
+                        width: MediaQuery
+                            .of(context)
+                            .size
+                            .width * 0.8,
                         padding: EdgeInsets.only(bottom: 0),
                         child: ElevatedButton(
                           onPressed: () {
-                            String id = _idController.text;
-                            String password = _passwordController.text;
-                            String email = _emailController.text + _selectedDomain;
+                            String email = _emailController.text +
+                                _selectedDomain;
                             String address = _addressController.text;
                             String nickname = _nicknameController.text;
-                            _register(
-                                id, password, email, address, nickname, context
-                            );
 
-                            if(!_idController.text.isEmpty
-                                && _validatePassword(_passwordController.text)
-                                && passwordsMatch) {
-                              Navigator.pushNamed(context, 'nextPage');
-                            } else if (!_validatePassword(_passwordController.text)) {
-                              _showDialog('오류', '비밀번호 양식에 맞게 입력해주세요.');
-                            } else if (!passwordsMatch) {
-                              _showDialog('오류', '비밀번호 확인란을 입력해주세요.');
-                            } else if (_idController.text.isEmpty) {
-                            _showDialog('오류', '아이디 입력란을 입력해주세요.');
+                            if (!_emailController.text.isEmpty
+                                && !_addressController.text.isEmpty
+                                && !_nicknameController.text.isEmpty) {
+                              _register(
+                                  widget.id,
+                                  widget.password,
+                                  email,
+                                  address,
+                                  nickname,
+                                  widget.userroll,
+                                  context
+                              );
+                            } else if (_emailController.text.isEmpty) {
+                              _showDialog('오류', '이메일을 입력해주세요.');
+                            } else if (_addressController.text.isEmpty) {
+                              _showDialog('오류', '주소를 입력해주세요.');
+                            } else if (_nicknameController.text.isEmpty) {
+                              _showDialog('오류', '닉네임을 입력해주세요.');
                             } else {
                               _showDialog('오류', '알수없는 오류');
                             }
@@ -528,7 +360,7 @@ class _RegisterFormState extends State<RegisterForm> {
                                 borderRadius: BorderRadius.circular(8)),
                           ),
                           child: Text(
-                            '다음으로',
+                            '이메일 인증하기',
                             style: TextStyle(
                               fontFamily: 'Sandoll',
                               fontWeight: FontWeight.w600,
@@ -544,36 +376,49 @@ class _RegisterFormState extends State<RegisterForm> {
   }
 
   void _register(String id, String password, String email, String address,
-      String nickname, BuildContext context) async {
-    String url = 'http://10.0.2.2:3000/users/signup';
+      String nickname, String userroll, BuildContext context) async {
+    String sugnupUrl = 'http://10.0.2.2:3000/users/signup';
+    String emailUrl = 'http://10.0.2.2:3000/users/email';
 
     Map<String, String> headers = {
       'Content-Type': 'application/json',
     };
 
-    Map<String, dynamic> body = {
-      'address' : address,
+    Map<String, dynamic> signupBody = {
+      'address': address,
       'email': email,
-      "emailConfirmed": true,
+      // "emailConfirmed": true,
       'id': id,
-      'loginType' : 'local',
-      'nickname' : nickname,
+      'loginType': 'local',
+      'nickname': nickname,
       'password': password,
-      "userRole": widget.data,
+      "userRole": userroll,
       "verifyRole": "VERIFYFALSE",
     };
 
-    try {
-      http.Response response = await http.post(Uri.parse(url),
-          headers: headers, body: json.encode(body));
+    Map<String, String> emailBody = {
+      'email': email,
+    };
 
-      if (response.statusCode == 201) {
-        // 회원가입 성공
-        _showDialog('회원가입 성공', '회원가입이 완료되었습니다. 로그인해주세요.');
+    try {
+      http.Response signupResponse = await http.post(Uri.parse(sugnupUrl),
+          headers: headers, body: json.encode(signupBody));
+      http.Response emailResponse = await http.post(Uri.parse(emailUrl),
+          headers: headers, body: json.encode(emailBody));
+
+      if (signupResponse.statusCode == 200 && emailResponse.statusCode == 200) {
         // 회원가입 성공 시 처리할 로직 추가
-        Navigator.pushNamed(context, '/login'); // 로그인 페이지로 이동
-      }  else {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    EmailVerifyPage(email)
+            )
+        );
+      } else {
         // 기타 오류
+        print('회원가입 오류 ${signupResponse.statusCode}');
+        print('이메일 전송 오류 ${emailResponse.statusCode}');
         _showDialog('오류', '회원가입 중에 오류가 발생했습니다.');
       }
     } catch (e) {
