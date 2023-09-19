@@ -1,16 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:where_shop_project/screen/register_second_page.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-<<<<<<< HEAD
-<<<<<<< HEAD:lib/screen/register_first_page.dart
-class FirstRegisterForm extends StatefulWidget {
-  final String data;
-
-  const FirstRegisterForm(this.data);
-
-=======
-class RegisterPage extends StatelessWidget {
-=======
 class RegisterPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -21,25 +12,14 @@ class RegisterPage extends StatelessWidget {
 }
 
 class RegisterForm extends StatefulWidget {
->>>>>>> parent of 922bf2f (Feat: 회원가입 페이지 분할, 이메일 인증 페이지 구현 완료)
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: RegisterForm(),
-    );
-  }
+  _RegisterFormState createState() => _RegisterFormState();
 }
 
-class RegisterForm extends StatefulWidget {
->>>>>>> parent of 922bf2f (Feat: 회원가입 페이지 분할, 이메일 인증 페이지 구현 완료):lib/screen/register_page.dart
-  @override
-  _FirstegisterFormState createState() => _FirstegisterFormState();
-}
-
-class _FirstegisterFormState extends State<FirstRegisterForm> {
+class _RegisterFormState extends State<RegisterForm> {
   // FocusNode 변수
-  FocusNode _idFocusNode = FocusNode();
-  bool _showLabel_id = true;
+  FocusNode _emailFocusNode = FocusNode();
+  bool _showLabel_email = true;
 
   FocusNode _passwordFocusNode = FocusNode();
   bool _showLabel_password = true;
@@ -47,6 +27,14 @@ class _FirstegisterFormState extends State<FirstRegisterForm> {
   FocusNode _passwordVerificationFocusNode = FocusNode();
   bool _showLabel_password_Verification = true;
 
+  FocusNode _idFocusNode = FocusNode();
+  bool _showLabel_id = true;
+
+  FocusNode _addressFocusNode = FocusNode();
+  bool _showLabel_address = true;
+
+  FocusNode _nicknameFocusNode = FocusNode();
+  bool _showLabel_nickname = true;
 
   // 변수
   bool passwordsMatch = false;
@@ -57,9 +45,10 @@ class _FirstegisterFormState extends State<FirstRegisterForm> {
   @override
   void initState() {
     super.initState();
-    _idFocusNode.addListener(() {
+    _emailFocusNode.addListener(() {
       setState(() {
-        _showLabel_id = !_idFocusNode.hasFocus;
+        _showLabel_email =
+            !_emailFocusNode.hasFocus; // 포커스가 없을 때에만 _showLabel을 true로 설정
       });
     });
     _passwordFocusNode.addListener(() {
@@ -70,7 +59,22 @@ class _FirstegisterFormState extends State<FirstRegisterForm> {
     _passwordVerificationFocusNode.addListener(() {
       setState(() {
         _showLabel_password_Verification =
-        !_passwordVerificationFocusNode.hasFocus;
+            !_passwordVerificationFocusNode.hasFocus;
+      });
+    });
+    _idFocusNode.addListener(() {
+      setState(() {
+        _showLabel_id = !_idFocusNode.hasFocus;
+      });
+    });
+    _addressFocusNode.addListener(() {
+      setState(() {
+        _showLabel_address = !_addressFocusNode.hasFocus;
+      });
+    });
+    _nicknameFocusNode.addListener(() {
+      setState(() {
+        _showLabel_nickname = !_nicknameFocusNode.hasFocus;
       });
     });
 
@@ -86,7 +90,7 @@ class _FirstegisterFormState extends State<FirstRegisterForm> {
   // 함수
   void checkPasswordMatch() {
     setState(() {
-      if (_passwordController.text.isNotEmpty &&
+      if(_passwordController.text.isNotEmpty &&
           _passwordVerificationController.text.isNotEmpty) {
         passwordsMatch =
             _passwordController.text == _passwordVerificationController.text;
@@ -109,9 +113,6 @@ class _FirstegisterFormState extends State<FirstRegisterForm> {
   TextEditingController _idController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _passwordVerificationController =
-<<<<<<< HEAD:lib/screen/register_first_page.dart
-  TextEditingController();
-=======
       TextEditingController();
   TextEditingController _emailController = TextEditingController();
   TextEditingController _addressController = TextEditingController();
@@ -143,7 +144,6 @@ class _FirstegisterFormState extends State<FirstRegisterForm> {
       ),
     );
   }
->>>>>>> parent of 922bf2f (Feat: 회원가입 페이지 분할, 이메일 인증 페이지 구현 완료):lib/screen/register_page.dart
 
   void _showDialog(String title, String message) {
     showDialog(
@@ -173,8 +173,7 @@ class _FirstegisterFormState extends State<FirstRegisterForm> {
       return;
     }
 
-    RegExp regex = RegExp(
-        r'^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,12}$');
+    RegExp regex = RegExp(r'^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,12}$');
 
     if (!regex.hasMatch(value)) {
       setState(() {
@@ -201,10 +200,7 @@ class _FirstegisterFormState extends State<FirstRegisterForm> {
           backgroundColor: Color(0xFF4876F2),
           body: SingleChildScrollView(
               child: Container(
-                  width: MediaQuery
-                      .of(context)
-                      .size
-                      .width * 1.0,
+                  width: MediaQuery.of(context).size.width * 1.0,
                   child: Column(
                     children: [
                       Padding(
@@ -213,7 +209,6 @@ class _FirstegisterFormState extends State<FirstRegisterForm> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            SizedBox(height: 70),
                             Text(
                               '정보를 입력해주세요',
                               style: TextStyle(
@@ -223,7 +218,7 @@ class _FirstegisterFormState extends State<FirstRegisterForm> {
                               ),
                             ),
 
-                            SizedBox(height: 60),
+                            SizedBox(height: 30),
                             // id TextField
                             TextField(
                               focusNode: _idFocusNode,
@@ -238,22 +233,9 @@ class _FirstegisterFormState extends State<FirstRegisterForm> {
                                 labelText:
                                 _showLabel_id ? '아이디' : null,
                                 labelStyle: TextStyle(
-<<<<<<< HEAD
-<<<<<<< HEAD:lib/screen/register_first_page.dart
-                                  fontFamily: 'Sandoll',
-                                  fontSize: 13,
-                                  color: Colors.white.withOpacity(0.5),
-                                  fontWeight: FontWeight.w600,
-=======
                                   fontSize: 16,
                                   color: Color(0xFFA7BAD8),
                                   fontWeight: FontWeight.bold,
->>>>>>> parent of 922bf2f (Feat: 회원가입 페이지 분할, 이메일 인증 페이지 구현 완료):lib/screen/register_page.dart
-=======
-                                  fontSize: 16,
-                                  color: Color(0xFFA7BAD8),
-                                  fontWeight: FontWeight.bold,
->>>>>>> parent of 922bf2f (Feat: 회원가입 페이지 분할, 이메일 인증 페이지 구현 완료)
                                 ),
                                 contentPadding: EdgeInsets.all(0),
                                 isDense: true,
@@ -284,22 +266,9 @@ class _FirstegisterFormState extends State<FirstRegisterForm> {
                               decoration: InputDecoration(
                                 labelText: _showLabel_password ? '비밀번호' : null,
                                 labelStyle: TextStyle(
-<<<<<<< HEAD
-<<<<<<< HEAD:lib/screen/register_first_page.dart
-                                  fontFamily: 'Sandoll',
-                                  fontSize: 13,
-                                  color: Colors.white.withOpacity(0.5),
-                                  fontWeight: FontWeight.w600,
-=======
                                   fontSize: 16,
                                   color: Color(0xFFA7BAD8),
                                   fontWeight: FontWeight.bold,
->>>>>>> parent of 922bf2f (Feat: 회원가입 페이지 분할, 이메일 인증 페이지 구현 완료):lib/screen/register_page.dart
-=======
-                                  fontSize: 16,
-                                  color: Color(0xFFA7BAD8),
-                                  fontWeight: FontWeight.bold,
->>>>>>> parent of 922bf2f (Feat: 회원가입 페이지 분할, 이메일 인증 페이지 구현 완료)
                                 ),
                                 errorText: _passwordErrorText,
                                 contentPadding: EdgeInsets.all(0),
@@ -345,10 +314,9 @@ class _FirstegisterFormState extends State<FirstRegisterForm> {
                                     ? '비밀번호 확인'
                                     : null,
                                 labelStyle: TextStyle(
-                                  fontFamily: 'Sandoll',
-                                  fontSize: 13,
-                                  color: Colors.white.withOpacity(0.5),
-                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                  color: Color(0xFFA7BAD8),
+                                  fontWeight: FontWeight.bold,
                                 ),
                                 contentPadding: EdgeInsets.all(0),
                                 isDense: true,
@@ -377,52 +345,176 @@ class _FirstegisterFormState extends State<FirstRegisterForm> {
                                 ),
                               ),
                             ),
+
+                            // email TextField
+                            Row(
+                              children: [
+                                Flexible(
+                                    child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    SizedBox(height: 20),
+                                    Stack(
+                                      alignment: Alignment.centerRight,
+                                      children: [
+                                        TextField(
+                                          focusNode: _emailFocusNode,
+                                          controller: _emailController,
+                                          onTap: () {
+                                            setState(() {
+                                              _showLabel_email = false;
+                                            });
+                                          },
+                                          style: TextStyle(fontSize: 18),
+                                          decoration: InputDecoration(
+                                            labelText:
+                                                _showLabel_email ? '이메일' : null,
+                                            labelStyle: TextStyle(
+                                              fontSize: 16,
+                                              color: Color(0xFFA7BAD8),
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            contentPadding: EdgeInsets.all(0),
+                                            isDense: true,
+                                            enabledBorder: UnderlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Colors.white),
+                                            ),
+                                            focusedBorder: UnderlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Colors.white),
+                                            ),
+                                          ),
+                                        ),
+                                        Container(
+                                          width: 130,
+                                          height: 30,
+                                          padding: EdgeInsets.only(left: 10.0),
+                                          decoration: BoxDecoration(
+                                            color: Color(0xFF284FB8),
+                                          ),
+                                          child: DropdownButton<String>(
+                                            value: _selectedDomain,
+                                            onChanged: (String? newValue) {
+                                              if (newValue != null) {
+                                                setState(() {
+                                                  _selectedDomain = newValue;
+                                                });
+                                              }
+                                            },
+                                            items: _domainOptions
+                                                .map<DropdownMenuItem<String>>(
+                                              (String domain) {
+                                                return DropdownMenuItem<String>(
+                                                  value: domain,
+                                                  child: Container(
+                                                    child: Text(
+                                                      domain,
+                                                      style: TextStyle(
+                                                          color: Colors.white),
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            ).toList(),
+                                            underline: SizedBox.shrink(),
+                                            icon: const Icon(
+                                                Icons.arrow_drop_down
+                                            ),
+                                            iconSize: 26,
+                                            iconDisabledColor: Color(0xFFD4DBEE),
+                                            iconEnabledColor: Color(0xFFD4DBEE),
+                                            dropdownColor: Color(0xFF284FB8),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                )),
+                              ],
+                            ),
+
+                            SizedBox(height: 30),
+                            // address TextField
+                            TextField(
+                              focusNode: _addressFocusNode,
+                              controller: _addressController,
+                              onTap: () {
+                                setState(() {
+                                  _showLabel_address = false;
+                                });
+                              },
+                              style: TextStyle(fontSize: 18),
+                              decoration: InputDecoration(
+                                labelText:
+                                _showLabel_address ? '주소' : null,
+                                labelStyle: TextStyle(
+                                  fontSize: 16,
+                                  color: Color(0xFFA7BAD8),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                contentPadding: EdgeInsets.all(0),
+                                isDense: true,
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.white),
+                                ),
+                                focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.white),
+                                ),
+                              ),
+                            ),
+
+                            SizedBox(height: 30),
+                            // nickname TextField
+                            TextField(
+                              focusNode: _nicknameFocusNode,
+                              controller: _nicknameController,
+                              onTap: () {
+                                setState(() {
+                                  _showLabel_nickname = false;
+                                });
+                              },
+                              style: TextStyle(fontSize: 18),
+                              decoration: InputDecoration(
+                                labelText:
+                                _showLabel_nickname ? '닉네임' : null,
+                                labelStyle: TextStyle(
+                                  fontSize: 16,
+                                  color: Color(0xFFA7BAD8),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                contentPadding: EdgeInsets.all(0),
+                                isDense: true,
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.white),
+                                ),
+                                focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.white),
+                                ),
+                              ),
+                            ),
+
                           ],
                         ),
                       ),
 
                       Container(
-                        width: MediaQuery
-                            .of(context)
-                            .size
-                            .width * 0.8,
+                        width: MediaQuery.of(context).size.width * 0.8,
                         padding: EdgeInsets.only(bottom: 0),
                         child: ElevatedButton(
                           onPressed: () {
                             String id = _idController.text;
                             String password = _passwordController.text;
-<<<<<<< HEAD:lib/screen/register_first_page.dart
-
-                            if (!_idController.text.isEmpty
-                                && _validatePassword(_passwordController.text)
-                                && passwordsMatch) {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          SecondRegisterForm(id, password, widget.data)
-                                  )
-                              );
-                            } else if (_idController.text.isEmpty) {
-                              _showDialog('오류', '아이디 입력란을 입력해주세요.');
-                            } else if (!_validatePassword(_passwordController.text)) {
-                              _showDialog('오류', '비밀번호 양식에 맞게 입력해주세요.');
-                            } else if (!passwordsMatch) {
-                              _showDialog('오류', '비밀번호 확인란을 입력해주세요.');
-                            } else {
-                              _showDialog('오류', '알수없는 오류');
-                            }
-=======
                             String email = _emailController.text + _selectedDomain;
                             String address = _addressController.text;
                             String nickname = _nicknameController.text;
                             _register(
                                 id, password, email, address, nickname, context
                             );
-<<<<<<< HEAD
->>>>>>> parent of 922bf2f (Feat: 회원가입 페이지 분할, 이메일 인증 페이지 구현 완료):lib/screen/register_page.dart
-=======
->>>>>>> parent of 922bf2f (Feat: 회원가입 페이지 분할, 이메일 인증 페이지 구현 완료)
                           },
                           style: ElevatedButton.styleFrom(
                             primary: Color(0xFF143386),
@@ -437,8 +529,6 @@ class _FirstegisterFormState extends State<FirstRegisterForm> {
                   )))),
     );
   }
-<<<<<<< HEAD:lib/screen/register_first_page.dart
-=======
 
   void _register(String id, String password, String email, String address,
       String nickname, BuildContext context) async {
@@ -481,5 +571,4 @@ class _FirstegisterFormState extends State<FirstRegisterForm> {
       _showDialog('오류', '서버와 통신 중에 오류가 발생했습니다.');
     }
   }
->>>>>>> parent of 922bf2f (Feat: 회원가입 페이지 분할, 이메일 인증 페이지 구현 완료):lib/screen/register_page.dart
 }
