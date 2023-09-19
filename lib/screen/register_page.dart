@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:where_shop_project/screen/register_second_page.dart';
 
+<<<<<<< HEAD
 <<<<<<< HEAD:lib/screen/register_first_page.dart
 class FirstRegisterForm extends StatefulWidget {
   final String data;
@@ -9,6 +10,18 @@ class FirstRegisterForm extends StatefulWidget {
 
 =======
 class RegisterPage extends StatelessWidget {
+=======
+class RegisterPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: RegisterForm(),
+    );
+  }
+}
+
+class RegisterForm extends StatefulWidget {
+>>>>>>> parent of 922bf2f (Feat: 회원가입 페이지 분할, 이메일 인증 페이지 구현 완료)
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -225,6 +238,7 @@ class _FirstegisterFormState extends State<FirstRegisterForm> {
                                 labelText:
                                 _showLabel_id ? '아이디' : null,
                                 labelStyle: TextStyle(
+<<<<<<< HEAD
 <<<<<<< HEAD:lib/screen/register_first_page.dart
                                   fontFamily: 'Sandoll',
                                   fontSize: 13,
@@ -235,6 +249,11 @@ class _FirstegisterFormState extends State<FirstRegisterForm> {
                                   color: Color(0xFFA7BAD8),
                                   fontWeight: FontWeight.bold,
 >>>>>>> parent of 922bf2f (Feat: 회원가입 페이지 분할, 이메일 인증 페이지 구현 완료):lib/screen/register_page.dart
+=======
+                                  fontSize: 16,
+                                  color: Color(0xFFA7BAD8),
+                                  fontWeight: FontWeight.bold,
+>>>>>>> parent of 922bf2f (Feat: 회원가입 페이지 분할, 이메일 인증 페이지 구현 완료)
                                 ),
                                 contentPadding: EdgeInsets.all(0),
                                 isDense: true,
@@ -265,6 +284,7 @@ class _FirstegisterFormState extends State<FirstRegisterForm> {
                               decoration: InputDecoration(
                                 labelText: _showLabel_password ? '비밀번호' : null,
                                 labelStyle: TextStyle(
+<<<<<<< HEAD
 <<<<<<< HEAD:lib/screen/register_first_page.dart
                                   fontFamily: 'Sandoll',
                                   fontSize: 13,
@@ -275,6 +295,11 @@ class _FirstegisterFormState extends State<FirstRegisterForm> {
                                   color: Color(0xFFA7BAD8),
                                   fontWeight: FontWeight.bold,
 >>>>>>> parent of 922bf2f (Feat: 회원가입 페이지 분할, 이메일 인증 페이지 구현 완료):lib/screen/register_page.dart
+=======
+                                  fontSize: 16,
+                                  color: Color(0xFFA7BAD8),
+                                  fontWeight: FontWeight.bold,
+>>>>>>> parent of 922bf2f (Feat: 회원가입 페이지 분할, 이메일 인증 페이지 구현 완료)
                                 ),
                                 errorText: _passwordErrorText,
                                 contentPadding: EdgeInsets.all(0),
@@ -394,7 +419,10 @@ class _FirstegisterFormState extends State<FirstRegisterForm> {
                             _register(
                                 id, password, email, address, nickname, context
                             );
+<<<<<<< HEAD
 >>>>>>> parent of 922bf2f (Feat: 회원가입 페이지 분할, 이메일 인증 페이지 구현 완료):lib/screen/register_page.dart
+=======
+>>>>>>> parent of 922bf2f (Feat: 회원가입 페이지 분할, 이메일 인증 페이지 구현 완료)
                           },
                           style: ElevatedButton.styleFrom(
                             primary: Color(0xFF143386),
