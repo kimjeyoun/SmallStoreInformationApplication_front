@@ -1,17 +1,14 @@
+import 'dart:js_interop';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class RegisterPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: RegisterForm(),
-    );
-  }
-}
-
 class RegisterForm extends StatefulWidget {
+  final String data;
+
+  const RegisterForm(this.data);
+
   @override
   _RegisterFormState createState() => _RegisterFormState();
 }
@@ -119,7 +116,6 @@ class _RegisterFormState extends State<RegisterForm> {
   TextEditingController _nicknameController = TextEditingController();
 
   String _selectedDomain = '직접입력'; // 초기 선택 도메인
-  String? _passwordErrorText;
 
   List<String> _domainOptions = [
     '직접입력',
@@ -165,24 +161,18 @@ class _RegisterFormState extends State<RegisterForm> {
     );
   }
 
-  void _validatePassword(String value) {
+  bool _validatePassword(String value) {
     if (value.isEmpty) {
-      setState(() {
-        _passwordErrorText = null;
-      });
-      return;
+      setState(() {});
+      return false;
     }
 
     RegExp regex = RegExp(r'^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,12}$');
 
     if (!regex.hasMatch(value)) {
-      setState(() {
-        _passwordErrorText = '8~12자리 영문과 숫자, 특수문자를 조합하여 입력해 주세요.';
-      });
+      return false;
     } else {
-      setState(() {
-        _passwordErrorText = null;
-      });
+      return true;
     }
   }
 
@@ -212,9 +202,10 @@ class _RegisterFormState extends State<RegisterForm> {
                             Text(
                               '정보를 입력해주세요',
                               style: TextStyle(
+                                fontFamily: 'Sandoll',
                                 color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 27,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 22,
                               ),
                             ),
 
@@ -228,14 +219,15 @@ class _RegisterFormState extends State<RegisterForm> {
                                   _showLabel_id = false;
                                 });
                               },
-                              style: TextStyle(fontSize: 18),
+                              style: TextStyle(fontSize: 13),
                               decoration: InputDecoration(
                                 labelText:
                                 _showLabel_id ? '아이디' : null,
                                 labelStyle: TextStyle(
-                                  fontSize: 16,
-                                  color: Color(0xFFA7BAD8),
-                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Sandoll',
+                                  fontSize: 13,
+                                  color: Color(0xFFA7BAD8).withOpacity(0.5),
+                                  fontWeight: FontWeight.w600,
                                 ),
                                 contentPadding: EdgeInsets.all(0),
                                 isDense: true,
@@ -256,21 +248,22 @@ class _RegisterFormState extends State<RegisterForm> {
                             TextField(
                               focusNode: _passwordFocusNode,
                               controller: _passwordController,
-                              onChanged: _validatePassword,
-                              style: TextStyle(fontSize: 18),
+                              style: TextStyle(fontSize: 13),
                               onTap: () {
                                 setState(() {
                                   _showLabel_password = false;
                                 });
                               },
+                              onChanged: _validatePassword,
                               decoration: InputDecoration(
                                 labelText: _showLabel_password ? '비밀번호' : null,
                                 labelStyle: TextStyle(
-                                  fontSize: 16,
-                                  color: Color(0xFFA7BAD8),
-                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Sandoll',
+                                  fontSize: 13,
+                                  color: Color(0xFFA7BAD8).withOpacity(0.5),
+                                  fontWeight: FontWeight.w600,
                                 ),
-                                errorText: _passwordErrorText,
+
                                 contentPadding: EdgeInsets.all(0),
                                 isDense: true,
                                 enabledBorder: UnderlineInputBorder(
@@ -289,9 +282,9 @@ class _RegisterFormState extends State<RegisterForm> {
                                 child: Text(
                                   '8~12자리 영문과 숫자, 특수문자를 조합하여 입력해 주세요.',
                                   style: TextStyle(
-                                    fontSize: 10,
-                                    color: Color(0xFFA7BAD8),
-                                    fontWeight: FontWeight.bold,
+                                    fontSize: 9,
+                                    color: Color(0xFFD1D9CF),
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
                               ),
@@ -336,11 +329,9 @@ class _RegisterFormState extends State<RegisterForm> {
                                 child: Text(
                                   passwordMatchText,
                                   style: TextStyle(
-                                    fontSize: 10,
-                                    color: passwordsMatch
-                                        ? Colors.green
-                                        : Colors.red,
-                                    fontWeight: FontWeight.bold,
+                                    fontSize: 9,
+                                    color: Color(0xFFD1D9CF),
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
                               ),
@@ -515,6 +506,20 @@ class _RegisterFormState extends State<RegisterForm> {
                             _register(
                                 id, password, email, address, nickname, context
                             );
+
+                            if(!_idController.text.isEmpty
+                                && _validatePassword(_passwordController.text)
+                                && passwordsMatch) {
+                              Navigator.pushNamed(context, 'nextPage');
+                            } else if (!_validatePassword(_passwordController.text)) {
+                              _showDialog('오류', '비밀번호 양식에 맞게 입력해주세요.');
+                            } else if (!passwordsMatch) {
+                              _showDialog('오류', '비밀번호 확인란을 입력해주세요.');
+                            } else if (_idController.text.isEmpty) {
+                            _showDialog('오류', '아이디 입력란을 입력해주세요.');
+                            } else {
+                              _showDialog('오류', '알수없는 오류');
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                             primary: Color(0xFF143386),
@@ -522,7 +527,15 @@ class _RegisterFormState extends State<RegisterForm> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8)),
                           ),
-                          child: Text('시작하기'),
+                          child: Text(
+                            '다음으로',
+                            style: TextStyle(
+                              fontFamily: 'Sandoll',
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
                       )
                     ],
@@ -546,7 +559,7 @@ class _RegisterFormState extends State<RegisterForm> {
       'loginType' : 'local',
       'nickname' : nickname,
       'password': password,
-      "userRole": "ADMIN",
+      "userRole": widget.data,
       "verifyRole": "VERIFYFALSE",
     };
 
@@ -559,10 +572,7 @@ class _RegisterFormState extends State<RegisterForm> {
         _showDialog('회원가입 성공', '회원가입이 완료되었습니다. 로그인해주세요.');
         // 회원가입 성공 시 처리할 로직 추가
         Navigator.pushNamed(context, '/login'); // 로그인 페이지로 이동
-      } else if (response.statusCode == 401) {
-        // 아이디 중복
-        _showDialog('회원가입 실패', '이미 사용 중인 아이디입니다.');
-      } else {
+      }  else {
         // 기타 오류
         _showDialog('오류', '회원가입 중에 오류가 발생했습니다.');
       }
