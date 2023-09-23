@@ -54,7 +54,7 @@ class UserTypeSelectionPage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => FirstRegisterForm('SHOPOWNE')
+                            builder: (context) => FirstRegisterForm('SHOPOWNER')
                           )
                         );
                       },
