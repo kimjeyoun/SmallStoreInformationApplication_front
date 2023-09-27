@@ -403,17 +403,7 @@ class _SecondRegisterFormState extends State<SecondRegisterForm> {
 
       if (response.statusCode == 200) {
         // 회원가입 성공 시 처리할 로직 추가
-        if(_emailVerify(email) == true){
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>
-                      EmailVerifyPage(email)
-              )
-          );
-        } else {
-          _showDialog('오류', '이메일 전송중에 오류가 발생했습니다.');
-        }
+        _emailVerify(email);
       } else {
         // 기타 오류
         print('회원가입 오류 ${response.statusCode}');
@@ -426,7 +416,7 @@ class _SecondRegisterFormState extends State<SecondRegisterForm> {
     }
   }
 
-  Future<bool> _emailVerify(String email) async {
+ void _emailVerify(String email) async {
     String url = 'http://10.0.2.2:3000/users/email';
 
     Map<String, String> headers = {
@@ -438,21 +428,24 @@ class _SecondRegisterFormState extends State<SecondRegisterForm> {
     };
 
     try{
-      http.Response response = await http.post(Uri.parse(url),
-          headers: headers, body: json.encode(body));
-
-      if(response.statusCode == 200) {
-        return true;
-      } else {
-        // 기타 오류
-        print('이메일 전송 오류 ${response.statusCode}');
-        _showDialog('오류', '이메일 전송중에 오류가 발생했습니다.');
-        return false;
-      }
+      await http.post(Uri.parse(url),
+          headers: headers, body: json.encode(body))
+          .then((response) => {
+            if(response.statusCode == 200) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        EmailVerifyPage(email))
+              )
+            } else {
+              print('이메일 전송 오류 ${response.statusCode}'),
+              _showDialog('오류', '이메일 전송중에 오류가 발생했습니다.')
+            }
+      });
     } catch(e) {
       print("response : ${e}");
       _showDialog('오류', '서버와 통신 중에 오류가 발생했습니다.');
-      return false;
     }
   }
 }

@@ -255,6 +255,12 @@ class _LoginFormState extends State<LoginForm> {
                 },
                 child: Text('kakao map'),
               ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/main');
+                },
+                child: Text('main'),
+              ),
             ],
           ),
         ),

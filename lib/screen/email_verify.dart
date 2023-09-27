@@ -137,7 +137,7 @@ class _EmailVerifyPageState extends State<EmailVerifyPage> {
   }
 
   void _emailAuthentication(String email, String randomCode) async {
-    String url = 'http://10.0.2.2:3000/users/emailVertify';
+    String url = 'http://10.0.2.2:3000/users/email/emailVerify';
 
     Map<String, String> headers = {
       'Content-Type': 'application/json',
