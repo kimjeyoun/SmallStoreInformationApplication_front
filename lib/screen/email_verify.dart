@@ -155,6 +155,7 @@ class _EmailVerifyPageState extends State<EmailVerifyPage> {
 
       if(response.statusCode == 200) {
         print("이메일 인증 성공");
+        Navigator.pushNamed(context, '/login');
       } else{
         print("email: ${email}");
         print("알수없는 오류: ${response.statusCode}");

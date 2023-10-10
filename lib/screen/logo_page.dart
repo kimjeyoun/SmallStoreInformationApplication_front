@@ -13,7 +13,11 @@ class _LogoPageState extends State<LogoPage> {
       User user = await UserApi.instance.me();
       print('사용지 정보 요청 성공'
           '\n회원번호: ${user.id}'
-          '\n닉네임: ${user.kakaoAccount?.profile?.nickname}');
+          '\n닉네임: ${user.kakaoAccount?.profile?.nickname}'
+          '\n닉네임: ${user.kakaoAccount?.email}'
+          '\n닉네임: ${user.kakaoAccount?.name}'
+          '\n모든 정보: ${user.kakaoAccount}'
+      );
     } catch (error) {
       print('사용자 정보 요청 실패 $error');
     }
@@ -89,8 +93,8 @@ class _LogoPageState extends State<LogoPage> {
               onPressed: () async {
                 if (await isKakaoTalkInstalled()) {
                   try {
-                    await UserApi.instance.loginWithKakaoTalk();
-                    print('카카오톡으로 로그인 성공');
+                    OAuthToken token = await UserApi.instance.loginWithKakaoTalk();
+                    print('카카오톡으로 로그인 성공: ${token.accessToken}');
                     _kakaoLoginButtonPressed();
                   } catch (error) {
                     print('카카오톡으로 로그인 실패 $error');

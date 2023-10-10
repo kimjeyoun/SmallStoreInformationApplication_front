@@ -57,6 +57,7 @@ class _LoginFormState extends State<LoginForm> {
         _showDialog('로그인 성공', '환영합니다!');
         // 로그인 성공 시 처리할 로직 추가
         // 예: 홈 페이지로 이동 또는 다른 작업 수행
+        Navigator.pushNamed(context, '/main');
       } else {
         // 기타 오류
         print("로그인 실패1 ${response.statusCode}");
