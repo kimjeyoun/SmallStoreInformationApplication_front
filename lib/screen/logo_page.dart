@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class LogoPage extends StatefulWidget {
   @override
@@ -8,6 +10,67 @@ class LogoPage extends StatefulWidget {
 }
 
 class _LogoPageState extends State<LogoPage> {
+  void _showDialog(String title, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: Text('확인'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _register_kakao(String id, final password, String email, String address,
+      String nickname, String userroll, BuildContext context) async {
+    String url = 'http://10.0.2.2:3000/users/signup';
+
+
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+    };
+
+    Map<String, dynamic> body = {
+      'address': address,
+      'email': email,
+      'id': id,
+      'loginType': 'kakaoLogin',
+      'nickname': nickname,
+      'password': password,
+      "userRole": userroll,
+      "verifyRole": "VERIFYFALSE",
+    };
+
+
+
+    try {
+      http.Response response = await http.post(Uri.parse(url),
+          headers: headers, body: json.encode(body));
+
+      if (response.statusCode == 200) {
+        // 회원가입 성공 시 처리할 로직 추가
+        print('카카오 회원가입 성공');
+      } else {
+        // 기타 오류
+        print('카카오 회원가입 오류 ${response.statusCode}');
+        print('body: $body');
+        _showDialog('오류', '카카오 회원가입 중에 오류가 발생했습니다.');
+      }
+    } catch (e) {
+      print("response : ${e}");
+      _showDialog('오류', '서버와 통신 중에 오류가 발생했습니다.');
+    }
+  }
+
   void _kakaoLoginButtonPressed() async {
     try {
       User user = await UserApi.instance.me();
@@ -15,9 +78,13 @@ class _LogoPageState extends State<LogoPage> {
           '\n회원번호: ${user.id}'
           '\n닉네임: ${user.kakaoAccount?.profile?.nickname}'
           '\n닉네임: ${user.kakaoAccount?.email}'
-          '\n닉네임: ${user.kakaoAccount?.name}'
           '\n모든 정보: ${user.kakaoAccount}'
       );
+      String id = user.id.toString();
+      const pw = null;
+      String? email = user.kakaoAccount?.email;
+      String? nickname = user.kakaoAccount?.profile?.nickname;
+      _register_kakao(id, pw, email!, '기본 주소', nickname!, 'USER', context);
     } catch (error) {
       print('사용자 정보 요청 실패 $error');
     }
