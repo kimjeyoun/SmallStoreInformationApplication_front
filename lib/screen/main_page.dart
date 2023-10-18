@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:where_shop_project/screen/my_bottom_navigation_bar.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key}) : super(key: key);
@@ -534,36 +535,7 @@ class MainPageState extends State<MainPage> {
               ],
             ),
           ),
-        bottomNavigationBar: BottomNavigationBar(
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
-          type: BottomNavigationBarType.fixed,
-          fixedColor: Color(0xFF303D68),
-          unselectedItemColor: Colors.white,
-          backgroundColor: Color(0xFF4876F2),
-          items: [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.menu),
-              label: '카테고리',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.map),
-              label: '지도',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: '홈',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.favorite),
-              label: '찜',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: '마이페이지',
-            ),
-          ],
-        ),
+        bottomNavigationBar: MyBottomNavigationBar()
       ),
     );
   }

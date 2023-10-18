@@ -6,6 +6,7 @@ import 'package:where_shop_project/screen/user_type_selection_page.dart';
 import 'package:where_shop_project/screen/logo_page.dart';
 import 'package:where_shop_project/screen/kakao_map_page.dart';
 import 'package:where_shop_project/screen/main_page.dart';
+import 'package:where_shop_project/screen/my_page.dart';
 
 void main() {
   AuthRepository.initialize(appKey: 'fa4f3ec1c61f1d480b71d4d0c2ce927b');
@@ -25,7 +26,8 @@ class MyApp extends StatelessWidget {
         '/login' : (context) => LoginPage(),
         '/selection':  (context) => UserTypeSelectionPage(),
         '/map': (context) => KakaoMapPage(),
-        '/main': (context) =>MainPage(),
+        '/main': (context) => MainPage(),
+        '/mypage': (context) => MyPage(),
       },
     );
   }
