@@ -136,7 +136,7 @@ class _MyPageState extends State<MyPage> {
             ),
           ],
         ),
-        bottomNavigationBar: MyBottomNavigationBar()
+        // bottomNavigationBar: MyBottomNavigationBar()
       ),
     );
   }

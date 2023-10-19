@@ -1,6 +1,17 @@
 import 'package:flutter/material.dart';
 
-class MyBottomNavigationBar extends StatelessWidget {
+class MyBottomNavigationBar extends StatefulWidget {
+  final Function toggleDrawer;
+  MyBottomNavigationBar({Key? key, required this.toggleDrawer}) : super(key: key);
+
+  @override
+  _MyBottomNavigationBarState createState() => _MyBottomNavigationBarState();
+}
+
+class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
+  int _selectedIndex = 0;
+  bool _showDrawer = false;
+
   @override
   Widget build(BuildContext) {
     return BottomNavigationBar(
@@ -32,6 +43,15 @@ class MyBottomNavigationBar extends StatelessWidget {
           label: '마이페이지',
         ),
       ],
+      onTap: (index) {
+        setState(() {
+          if (index == 0) {
+            widget.toggleDrawer();
+          } else {
+            _selectedIndex = index;
+          }
+        });
+      },
     );
   }
 }

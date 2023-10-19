@@ -31,7 +31,7 @@ class _LogoPageState extends State<LogoPage> {
     );
   }
 
-  void _register_kakao(String id, String email, String address,
+  void _register_kakao(String id, String email, final password, String address,
       String nickname, String userroll, BuildContext context) async {
     String url = 'http://10.0.2.2:3000/users/signup';
 
@@ -80,7 +80,11 @@ class _LogoPageState extends State<LogoPage> {
           '\n닉네임: ${user.kakaoAccount?.profile?.nickname}'
           '\n모든 정보: ${user.kakaoAccount?.email}'
       );
-      // _register_kakao(user.id.toString(), user.kakaoAccount!.email, '임시 주소', user.kakaoAccount?.profile!.nickname, 'USER', context)
+      String id = user.id.toString();
+      const pw = null;
+      String? email = user.kakaoAccount?.email;
+      String? nickname = user.kakaoAccount?.profile?.nickname;
+      _register_kakao(id, pw, email!, '임시 주소', nickname!, 'USER', context);
     } catch (error) {
       print('사용자 정보 요청 실패 $error');
     }

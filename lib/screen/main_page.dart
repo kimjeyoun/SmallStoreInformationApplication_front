@@ -1,21 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:where_shop_project/screen/my_bottom_navigation_bar.dart';
+import 'package:where_shop_project/screen/my_drawer.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key}) : super(key: key);
 
   @override
-  MainPageState createState() => MainPageState();
+  _MainPageState createState() => _MainPageState();
 }
 
-class MainPageState extends State<MainPage> {
+class _MainPageState extends State<MainPage> {
   final SearchController _searchController = SearchController();
   bool _showClearButton = false;
   int _selectedIndex = 0;
 
   PageController _eventViewController = PageController(initialPage: 0);
   int _currentPage = 0;
+
+  bool _showDrawer = false;
+
+  void toggleDrawer() {
+    setState(() {
+      _showDrawer = !_showDrawer;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -535,7 +544,8 @@ class MainPageState extends State<MainPage> {
               ],
             ),
           ),
-        bottomNavigationBar: MyBottomNavigationBar()
+          bottomNavigationBar: MyBottomNavigationBar(toggleDrawer: toggleDrawer),
+          drawer: _showDrawer ? MyDrawer() : null,
       ),
     );
   }
