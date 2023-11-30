@@ -1,6 +1,17 @@
 import 'package:flutter/material.dart';
 
-class MyBottomNavigationBar extends StatelessWidget {
+class MyBottomNavigationBar extends StatefulWidget {
+  MyBottomNavigationBar({Key? key}) : super(key: key);
+
+  @override
+  _MyBottomNavigationBarState createState() => _MyBottomNavigationBarState();
+}
+
+class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>(); // GlobalKey 생성
+  int _selectedIndex = 0;
+  bool _showDrawer = false;
+
   @override
   Widget build(BuildContext) {
     return BottomNavigationBar(
@@ -12,7 +23,12 @@ class MyBottomNavigationBar extends StatelessWidget {
       backgroundColor: Color(0xFF4876F2),
       items: [
         BottomNavigationBarItem(
-          icon: Icon(Icons.menu),
+          icon: IconButton(
+            icon: Icon(Icons.menu),
+            onPressed: () {
+              _scaffoldKey.currentState!.openDrawer(); // Drawer 열기
+            },
+          ),
           label: '카테고리',
         ),
         BottomNavigationBarItem(

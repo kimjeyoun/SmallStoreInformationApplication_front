@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:where_shop_project/screen/email_verify.dart';
+import 'package:where_shop_project/screen/business_registration_num_verify_page.dart';
+import 'package:where_shop_project/screen/customer_add_indo_page.dart';
 
 class SecondRegisterForm extends StatefulWidget {
   final String id;
@@ -16,33 +17,26 @@ class SecondRegisterForm extends StatefulWidget {
 
 class _SecondRegisterFormState extends State<SecondRegisterForm> {
   // FocusNode 변수
-  FocusNode _emailFocusNode = FocusNode();
-  bool _showLabel_email = true;
+  FocusNode _phoneNumFocusNode = FocusNode();
+  bool _showLabel_phoneNum = true;
 
-  FocusNode _addressFocusNode = FocusNode();
-  bool _showLabel_address = true;
-
-  FocusNode _nicknameFocusNode = FocusNode();
-  bool _showLabel_nickname = true;
+  FocusNode _verifyNumFocusNode = FocusNode();
+  bool _showLabel_verifyNum = true;
 
   // 이벤트 초기화
   @override
   void initState() {
     super.initState();
-    _emailFocusNode.addListener(() {
+    _phoneNumFocusNode.addListener(() {
       setState(() {
-        _showLabel_email =
-        !_emailFocusNode.hasFocus; // 포커스가 없을 때에만 _showLabel을 true로 설정
+        _showLabel_phoneNum =
+        !_phoneNumFocusNode.hasFocus; // 포커스가 없을 때에만 _showLabel을 true로 설정
       });
     });
-    _addressFocusNode.addListener(() {
+    _verifyNumFocusNode.addListener(() {
       setState(() {
-        _showLabel_address = !_addressFocusNode.hasFocus;
-      });
-    });
-    _nicknameFocusNode.addListener(() {
-      setState(() {
-        _showLabel_nickname = !_nicknameFocusNode.hasFocus;
+        _showLabel_verifyNum =
+        !_verifyNumFocusNode.hasFocus; // 포커스가 없을 때에만 _showLabel을 true로 설정
       });
     });
   }
@@ -55,19 +49,8 @@ class _SecondRegisterFormState extends State<SecondRegisterForm> {
   }
 
   // 컨트롤러
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _addressController = TextEditingController();
-  TextEditingController _nicknameController = TextEditingController();
-
-  String _selectedDomain = '직접입력'; // 초기 선택 도메인
-
-  List<String> _domainOptions = [
-    '직접입력',
-    '@naver.com',
-    '@gmail.com',
-    '@yahoo.com',
-    // 다른 도메인 옵션들...
-  ];
+  TextEditingController _phoneNumController = TextEditingController();
+  TextEditingController _verifyNumController = TextEditingController();
 
   // 함수
   InputDecoration _emailInputDecoration() {
@@ -122,15 +105,34 @@ class _SecondRegisterFormState extends State<SecondRegisterForm> {
                       .width * 1.0,
                   child: Column(
                     children: [
+                      const SizedBox(height: 60),
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.arrow_back_ios),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            color: Colors.white, // 뒤로가기 버튼 색상
+                          ),
+                          const SizedBox(width: 100),
+                          Image.asset(
+                            'asset/img/wordmark_white.png',
+                            width: 90,
+                          ),
+                        ],
+                      ),
                       Padding(
-                        padding: EdgeInsets.all(70),
+                        padding: EdgeInsets.symmetric(
+                            vertical: 80,
+                            horizontal: 40
+                        ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            SizedBox(height: 70),
                             Text(
-                              '추가 정보를 입력해주세요',
+                              '전화번호로 본인인증',
                               style: TextStyle(
                                 fontFamily: 'Sandoll',
                                 color: Colors.white,
@@ -139,245 +141,178 @@ class _SecondRegisterFormState extends State<SecondRegisterForm> {
                               ),
                             ),
 
-                            SizedBox(height: 50),
+                            SizedBox(height: 85),
 
-                            // email TextField
+                            // phoneNum TextField
                             Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Flexible(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment
-                                          .center,
-                                      children: [
-                                        SizedBox(height: 20),
-                                        Stack(
-                                          alignment: Alignment.centerRight,
-                                          children: [
-                                            TextField(
-                                              focusNode: _emailFocusNode,
-                                              controller: _emailController,
-                                              onTap: () {
-                                                setState(() {
-                                                  _showLabel_email = false;
-                                                });
-                                              },
-                                              style: TextStyle(fontSize: 13),
-                                              decoration: InputDecoration(
-                                                labelText:
-                                                _showLabel_email ? '이메일' : null,
-                                                labelStyle: TextStyle(
-                                                  fontFamily: 'Sandoll',
-                                                  fontSize: 13,
-                                                  color: Colors.white
-                                                      .withOpacity(0.5),
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                                contentPadding: EdgeInsets.all(
-                                                    0),
-                                                isDense: true,
-                                                enabledBorder: UnderlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                      color: Colors.white),
-                                                ),
-                                                focusedBorder: UnderlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                      color: Colors.white),
-                                                ),
-                                              ),
-                                            ),
-                                            Container(
-                                              width: 130,
-                                              height: 30,
-                                              padding: EdgeInsets.only(
-                                                  left: 10.0),
-                                              decoration: BoxDecoration(
-                                                color: Color(0xFF284FB8),
-                                              ),
-                                              child: DropdownButton<String>(
-                                                value: _selectedDomain,
-                                                onChanged: (String? newValue) {
-                                                  if (newValue != null) {
-                                                    setState(() {
-                                                      _selectedDomain =
-                                                          newValue;
-                                                    });
-                                                  }
-                                                },
-                                                items: _domainOptions
-                                                    .map<
-                                                    DropdownMenuItem<String>>(
-                                                      (String domain) {
-                                                    return DropdownMenuItem<
-                                                        String>(
-                                                      value: domain,
-                                                      child: Container(
-                                                        child: Text(
-                                                          domain,
-                                                          style: TextStyle(
-                                                            fontFamily: 'Sandoll',
-                                                            fontSize: 13,
-                                                            color: Colors.white
-                                                                .withOpacity(
-                                                                0.5),
-                                                            fontWeight: FontWeight
-                                                                .w600,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    );
-                                                  },
-                                                ).toList(),
-                                                underline: SizedBox.shrink(),
-                                                icon: const Icon(
-                                                    Icons.arrow_drop_down
-                                                ),
-                                                iconSize: 26,
-                                                iconDisabledColor: Color(
-                                                    0xFFD4DBEE),
-                                                iconEnabledColor: Color(
-                                                    0xFFD4DBEE),
-                                                dropdownColor: Color(
-                                                    0xFF284FB8),
-                                              ),
-                                            ),
-                                          ],
+                                // email TextField
+                                Container(
+                                  width: 210,
+                                  child: TextField(
+                                    focusNode: _phoneNumFocusNode,
+                                    controller: _phoneNumController,
+                                    onTap: () {
+                                      setState(() {
+                                        _showLabel_phoneNum = false;
+                                      });
+                                    },
+                                    showCursor: false, // 커서 숨기기
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                    ),
+                                    decoration: InputDecoration(
+                                        filled: true, // 배경 색상을 사용하도록 설정
+                                        fillColor: Colors.white, // 배경 색상 설정
+                                        labelText:
+                                        _showLabel_phoneNum ? '전화번호' : null,
+                                        labelStyle: TextStyle(
+                                          fontFamily: 'Sandoll',
+                                          fontSize: 13,
+                                          color: Colors.grey.withOpacity(0.5),
+                                          fontWeight: FontWeight.w600,
                                         ),
-                                      ],
-                                    )),
+                                        contentPadding: EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 13.2
+                                        ),
+                                        isDense: true,
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(3.5),
+                                          borderSide: BorderSide.none,
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: Colors.white,
+                                            )
+                                        )
+                                    ),
+                                  ),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    String phoneNum = _phoneNumController.text;
+
+                                    if (!_phoneNumController.text.isEmpty) {
+                                      _smsVerify(widget.id, phoneNum, context);
+                                    } else if (_phoneNumController.text.isEmpty) {
+                                      _showDialog('오류', '전화번호을 입력해주세요.');
+                                    } else {
+                                      _showDialog('오류', '알수없는 오류');
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    primary: Color(0xFF143386),
+                                    minimumSize: Size(70, 50),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8)),
+                                  ),
+                                  child: Text(
+                                    '인증하기',
+                                    style: TextStyle(
+                                      fontFamily: 'Sandoll',
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 13,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
                               ],
                             ),
 
-                            SizedBox(height: 40),
-                            // address TextField
+                            SizedBox(height: 25),
+
+                            // verifyNum TextField
                             TextField(
-                              focusNode: _addressFocusNode,
-                              controller: _addressController,
+                              focusNode: _verifyNumFocusNode,
+                              controller: _verifyNumController,
                               onTap: () {
                                 setState(() {
-                                  _showLabel_address = false;
+                                  _showLabel_verifyNum = false;
                                 });
                               },
-                              style: TextStyle(fontSize: 18),
+                              showCursor: false, // 커서 숨기기
+                              style: TextStyle(
+                                fontSize: 15,
+                              ),
                               decoration: InputDecoration(
-                                labelText:
-                                _showLabel_address ? '주소' : null,
-                                labelStyle: TextStyle(
-                                  fontFamily: 'Sandoll',
-                                  fontSize: 13,
-                                  color: Colors.white.withOpacity(0.5),
-                                  fontWeight: FontWeight.w600,
-                                ),
-                                contentPadding: EdgeInsets.all(0),
-                                isDense: true,
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Colors.white),
-                                ),
-                                focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Colors.white),
-                                ),
+                                  filled: true, // 배경 색상을 사용하도록 설정
+                                  fillColor: Colors.white, // 배경 색상 설정
+                                  labelText:
+                                  _showLabel_verifyNum ? '인증번호' : null,
+                                  labelStyle: TextStyle(
+                                    fontFamily: 'Sandoll',
+                                    fontSize: 13,
+                                    color: Colors.grey.withOpacity(0.5),
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 13.2
+                                  ),
+                                  isDense: true,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(3.5),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: Colors.white,
+                                      )
+                                  )
                               ),
                             ),
 
-                            SizedBox(height: 20),
+                            SizedBox(height: 25),
 
-                            // nickname TextField
-                            TextField(
-                              focusNode: _nicknameFocusNode,
-                              controller: _nicknameController,
-                              onTap: () {
-                                setState(() {
-                                  _showLabel_nickname = false;
-                                });
+                            // next btn
+                            ElevatedButton(
+                              onPressed: () {
+                                String phoneNum = _phoneNumController.text;
+                                String verifyNum = _verifyNumController.text;
+                                String type = 'auth';
+
+                                if (!_phoneNumController.text.isEmpty &&
+                                    !_verifyNumController.text.isEmpty) {
+                                  _smsRandomCodeVerify(phoneNum, verifyNum, type, widget.id);
+                                } else if (_phoneNumController.text.isEmpty) {
+                                  _showDialog('오류', '인증을 완료해주세요.');
+                                } else if(_verifyNumController.text.isEmpty) {
+                                  _showDialog('오류', '인증번호를 입력해주세요.');
+                                } else {
+                                  _showDialog('오류', '알수없는 오류');
+                                }
                               },
-                              style: TextStyle(fontSize: 18),
-                              decoration: InputDecoration(
-                                labelText:
-                                _showLabel_nickname ? '닉네임' : null,
-                                labelStyle: TextStyle(
+                              style: ElevatedButton.styleFrom(
+                                primary: Color(0xFF143386),
+                                minimumSize: Size(double.infinity, 50),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8)),
+                              ),
+                              child: Text(
+                                '인증완료',
+                                style: TextStyle(
                                   fontFamily: 'Sandoll',
-                                  fontSize: 13,
-                                  color: Colors.white.withOpacity(0.5),
                                   fontWeight: FontWeight.w600,
-                                ),
-                                contentPadding: EdgeInsets.all(0),
-                                isDense: true,
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Colors.white),
-                                ),
-                                focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Colors.white),
+                                  fontSize: 13,
+                                  color: Colors.white,
                                 ),
                               ),
                             ),
-
                           ],
                         ),
                       ),
-
-                      Container(
-                        width: MediaQuery
-                            .of(context)
-                            .size
-                            .width * 0.8,
-                        padding: EdgeInsets.only(bottom: 0),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            String email = _emailController.text +
-                                _selectedDomain;
-                            String address = _addressController.text;
-                            String nickname = _nicknameController.text;
-
-                            if (!_emailController.text.isEmpty
-                                && !_addressController.text.isEmpty
-                                && !_nicknameController.text.isEmpty) {
-                              _register(
-                                  widget.id,
-                                  widget.password,
-                                  email,
-                                  address,
-                                  nickname,
-                                  widget.userroll,
-                                  context
-                              );
-                            } else if (_emailController.text.isEmpty) {
-                              _showDialog('오류', '이메일을 입력해주세요.');
-                            } else if (_addressController.text.isEmpty) {
-                              _showDialog('오류', '주소를 입력해주세요.');
-                            } else if (_nicknameController.text.isEmpty) {
-                              _showDialog('오류', '닉네임을 입력해주세요.');
-                            } else {
-                              _showDialog('오류', '알수없는 오류');
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            primary: Color(0xFF143386),
-                            minimumSize: Size(double.infinity, 50),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8)),
-                          ),
-                          child: Text(
-                            '이메일 인증하기',
-                            style: TextStyle(
-                              fontFamily: 'Sandoll',
-                              fontWeight: FontWeight.w600,
-                              fontSize: 13,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      )
                     ],
-                  )))),
+                  )
+              )
+          )
+      ),
     );
   }
 
-  void _register(String id, String password, String email, String address,
-      String nickname, String userroll, BuildContext context) async {
-    String url = 'http://10.0.2.2:3000/users/signup';
+  void _smsVerify(String id, String phonenum, BuildContext context) async {
+    String url = 'http://10.0.2.2:3000/users/sms/confirmed';
 
 
     Map<String, String> headers = {
@@ -385,30 +320,22 @@ class _SecondRegisterFormState extends State<SecondRegisterForm> {
     };
 
     Map<String, dynamic> body = {
-      'address': address,
-      'email': email,
       'id': id,
-      'loginType': 'localLogin',
-      'nickname': nickname,
-      'password': password,
-      "userRole": userroll,
-      "verifyRole": "VERIFYFALSE",
+      'phone': phonenum,
     };
-
-
 
     try {
       http.Response response = await http.post(Uri.parse(url),
           headers: headers, body: json.encode(body));
 
       if (response.statusCode == 200) {
-        // 회원가입 성공 시 처리할 로직 추가
-        _emailVerify(email);
+        _showDialog('인증코드 발송', '코드 입력후 인증완료 버튼을 눌러주세요.');
+
       } else {
         // 기타 오류
-        print('회원가입 오류 ${response.statusCode}');
+        print('sms인증 오류 ${response.statusCode}');
         print('body: $body');
-        _showDialog('오류', '회원가입 중에 오류가 발생했습니다.');
+        _showDialog('오류', 'sms인증 오류가 발생했습니다.');
       }
     } catch (e) {
       print("response : ${e}");
@@ -416,34 +343,52 @@ class _SecondRegisterFormState extends State<SecondRegisterForm> {
     }
   }
 
- void _emailVerify(String email) async {
-    String url = 'http://10.0.2.2:3000/users/email';
+  void _smsRandomCodeVerify(String phoneNum, String randomCode,
+      String type, String id) async {
+    String url = 'http://10.0.2.2:3000/users/sms/verify';
 
     Map<String, String> headers = {
       'Content-Type': 'application/json',
     };
 
     Map<String, String> body = {
-      'email': email,
+      'phone': phoneNum,
+      'randomcode' : randomCode,
+      'type' : type,
+      'user_id' : id,
     };
 
-    try{
-      await http.post(Uri.parse(url),
-          headers: headers, body: json.encode(body))
-          .then((response) => {
-            if(response.statusCode == 200) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        EmailVerifyPage(email))
+
+    try {
+      http.Response response = await http.post(Uri.parse(url),
+          headers: headers, body: json.encode(body));
+
+      if (response.statusCode == 200) {
+        _showDialog('인증완료', '추가 정보를 입력해주세요.');
+        if(widget.userroll == 'SHOPOWNER') {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      BusinessRegistrationNumVerifyPage(widget.id)
               )
-            } else {
-              print('이메일 전송 오류 ${response.statusCode}'),
-              _showDialog('오류', '이메일 전송중에 오류가 발생했습니다.')
-            }
-      });
-    } catch(e) {
+          );
+        } else {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      CustomerAddInfoPage(id, phoneNum)
+              )
+          );
+        }
+      } else {
+        // 기타 오류
+        print('sms인증 오류 ${response.statusCode}');
+        print('body: $body');
+        _showDialog('오류', 'sms인증 오류가 발생했습니다.');
+      }
+    } catch (e) {
       print("response : ${e}");
       _showDialog('오류', '서버와 통신 중에 오류가 발생했습니다.');
     }
