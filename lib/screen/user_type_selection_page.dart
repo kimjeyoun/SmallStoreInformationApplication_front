@@ -5,22 +5,27 @@ class UserTypeSelectionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0, // 앱바의 그림자 없애기
-        automaticallyImplyLeading: false, // 뒤로가기 버튼 제거
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          color: const Color(0xFF143386), // 뒤로가기 버튼 색상
-        ),
-      ),
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const SizedBox(height: 80),
+            Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back_ios),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  color: const Color(0xFF4876F2), // 뒤로가기 버튼 색상
+                ),
+                const SizedBox(width: 100),
+                Image.asset(
+                  'asset/img/wordmark_blue.png',
+                  width: 90,
+                ),
+              ],
+            ),
             const SizedBox(height: 45),
             const Text(
               '어떤 유형의 고객이신가요?',
@@ -31,7 +36,7 @@ class UserTypeSelectionPage extends StatelessWidget {
                 fontWeight: FontWeight.w700,
               ),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 70),
             Row(
               mainAxisAlignment: MainAxisAlignment.start, // 오른쪽 정렬 설정
               children: [
@@ -39,16 +44,6 @@ class UserTypeSelectionPage extends StatelessWidget {
                   width: 350,
                   height: 150,
                   child: Container(
-                    decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF4876F2).withOpacity(0.6),
-                          spreadRadius: 5,
-                          blurRadius: 10,
-                          offset: const Offset(0, 7), // 오른쪽과 아래로 그림자 적용
-                        ),
-                      ],
-                    ),
                     child: ElevatedButton(
                       onPressed: () {
                         Navigator.push(
@@ -121,16 +116,6 @@ class UserTypeSelectionPage extends StatelessWidget {
                   width: 350,
                   height: 150,
                   child: Container(
-                    decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF488f43).withOpacity(0.6),
-                          spreadRadius: 5,
-                          blurRadius: 10,
-                          offset: const Offset(0, 7), // 오른쪽과 아래로 그림자 적용
-                        ),
-                      ],
-                    ),
                     child: ElevatedButton(
                       onPressed: () {
                         Navigator.push(

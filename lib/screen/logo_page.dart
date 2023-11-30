@@ -4,6 +4,7 @@ import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:where_shop_project/screen/kakao_additional_information_page.dart';
 
 class LogoPage extends StatefulWidget {
   @override
@@ -31,8 +32,7 @@ class _LogoPageState extends State<LogoPage> {
     );
   }
 
-  void _register_kakao(String id, String email, final password, String address,
-      String nickname, String userroll, BuildContext context) async {
+  void _register_kakao(String id, String password, final accessToken, String userroll) async {
     String url = 'http://10.0.2.2:3000/users/signup';
 
 
@@ -41,12 +41,9 @@ class _LogoPageState extends State<LogoPage> {
     };
 
     Map<String, dynamic> body = {
-      'address': address,
-      'email': email,
       'id': id,
       'loginType': 'kakaoLogin',
-      'nickname': nickname,
-      'password': null,
+      'password': password,
       "userRole": userroll,
       "verifyRole": "VERIFYFALSE",
     };
@@ -59,11 +56,19 @@ class _LogoPageState extends State<LogoPage> {
 
       if (response.statusCode == 200) {
         // 회원가입 성공 시 처리할 로직 추가
+        print('카카오 회원가입 성공');
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    KakaoAdditionalInfomationPage(id, password, accessToken, userroll)
+            )
+        );
       } else {
         // 기타 오류
-        print('회원가입 오류 ${response.statusCode}');
+        print('카카오 회원가입 오류 ${response.statusCode}');
         print('body: $body');
-        _showDialog('오류', '회원가입 중에 오류가 발생했습니다.');
+        _showDialog('오류', '카카오 회원가입 중에 오류가 발생했습니다.');
       }
     } catch (e) {
       print("response : ${e}");
@@ -71,20 +76,78 @@ class _LogoPageState extends State<LogoPage> {
     }
   }
 
-
   void _kakaoLoginButtonPressed() async {
+    try {
+      if (await AuthApi.instance.hasToken()) {
+        try {
+          AccessTokenInfo tokenInfo = await UserApi.instance.accessTokenInfo();
+          print('토큰 유효성 체크 성공 ${tokenInfo}');
+
+          // 여기에서 토큰이 유효할 때의 로직을 추가할 수 있습니다.
+          _verifyKakaoToken(tokenInfo);
+
+        } catch (error) {
+          if (error is KakaoException && error.isInvalidTokenError()) {
+            print('토큰 만료 $error');
+          } else {
+            print('토큰 정보 조회 실패 $error');
+          }
+
+          try {
+            // 카카오 계정으로 로그인
+            OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
+            print('로그인 성공 ${token.accessToken}');
+
+            // 여기에서 토큰이 유효할 때의 로직을 추가할 수 있습니다.
+            if(await AuthApi.instance.hasToken()) {
+              AccessTokenInfo tokenInfo = await UserApi.instance.accessTokenInfo();
+              _verifyKakaoToken(tokenInfo);
+            } else {
+              print('토큰 발급 실패');
+            }
+
+          } catch (error) {
+            print('로그인 실패 $error');
+          }
+        }
+      } else {
+        print('발급된 토큰 없음');
+        try {
+          OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
+          print('로그인 성공 ${token.accessToken}');
+
+          // 여기에서 토큰이 유효할 때의 로직을 추가할 수 있습니다.
+          if(await AuthApi.instance.hasToken()) {
+            AccessTokenInfo tokenInfo = await UserApi.instance.accessTokenInfo();
+            _verifyKakaoToken(tokenInfo);
+          } else {
+            print('토큰 발급 실패');
+          }
+        } catch (error) {
+          print('로그인 실패 $error');
+        }
+      }
+
+      // 사용자 정보 요청 등 추가 로직은 여기에 작성
+
+    } catch (error) {
+      print('사용자 정보 요청 실패 $error');
+    }
+  }
+
+
+  void _verifyKakaoToken(final accessToken) async {
     try {
       User user = await UserApi.instance.me();
       print('사용지 정보 요청 성공'
           '\n회원번호: ${user.id}'
           '\n닉네임: ${user.kakaoAccount?.profile?.nickname}'
-          '\n모든 정보: ${user.kakaoAccount?.email}'
+          '\n닉네임: ${user.kakaoAccount?.email}'
+          '\n모든 정보: ${user.kakaoAccount}'
       );
       String id = user.id.toString();
-      const pw = null;
-      String? email = user.kakaoAccount?.email;
-      String? nickname = user.kakaoAccount?.profile?.nickname;
-      _register_kakao(id, pw, email!, '임시 주소', nickname!, 'USER', context);
+      String pw = 'kakaoLogin1234';
+      _register_kakao(id, pw, accessToken, 'USER');
     } catch (error) {
       print('사용자 정보 요청 실패 $error');
     }
@@ -94,7 +157,7 @@ class _LogoPageState extends State<LogoPage> {
     try {
       user = await UserApi.instance.me();
     } catch (error) {
-      print('사용자 정보 요청 실패 $error');
+      print('사용자 정보 요청 실패1 $error');
       return;
     }
 
@@ -148,7 +211,7 @@ class _LogoPageState extends State<LogoPage> {
             '\n닉네임: ${user.kakaoAccount?.profile?.nickname}'
             '\n이메일: ${user.kakaoAccount?.email}');
       } catch (error) {
-        print('사용자 정보 요청 실패 $error');
+        print('사용자 정보 요청 실패2 $error');
       }
     }
   }
@@ -172,7 +235,12 @@ class _LogoPageState extends State<LogoPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset('asset/img/logo.png'), // 로고 이미지 파일을 assets 폴더에 추가한 뒤 경로에 맞게 수정
+                SizedBox(height: 50),
+                Image.asset(
+                  'asset/img/wordmark_white.png',
+                  width: 200,
+                ), // 로고 이미지 파일을 assets 폴더에 추가한 뒤 경로에 맞게 수정
+                SizedBox(height: 15),
                 Text(
                   '우리 동네 숨은 가게,\n어디있샵',
                   textAlign: TextAlign.center,
@@ -186,12 +254,12 @@ class _LogoPageState extends State<LogoPage> {
               ],
             ),
           ),
-          ElevatedButton(
-            onPressed: () {
-              _kakaoLogout();
-            },
-            child: Text('로그아웃'),
-          ),
+          // ElevatedButton(
+            // onPressed: () {
+              // _kakaoLogout();
+            // },
+            // child: Text('로그아웃'),
+          // ),
           SizedBox(
             height: 48,
             width: double.infinity,

@@ -3,44 +3,86 @@ import 'package:flutter/material.dart';
 class MyDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Drawer(
-        // Drawer 내용
-        child: Column(
-          children: <Widget>[
-            UserAccountsDrawerHeader(
-              accountName: Text('사용자 이름'),
-              accountEmail: Text('user@example.com'),
-              currentAccountPicture: CircleAvatar(
-                child: Icon(Icons.person),
+    return Drawer(
+      width: 270,
+      backgroundColor: Colors.white,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Container(
+            width: 100,
+            height: 100,
+            child: Text(
+              '로고영역',
+              style: TextStyle(
+                fontSize: 24,
               ),
             ),
-            ListTile(
-              title: Text('프로필 설정'),
-              onTap: () {
-                // 프로필 설정 페이지로 이동
-                Navigator.pop(context); // Drawer 닫기
-                // TODO: 프로필 설정 페이지로 이동하는 코드 추가
-              },
+          ),
+          Container(
+            width: 100,
+            height: 100,
+            margin: EdgeInsets.only(bottom: 50),
+            padding: EdgeInsets.only(bottom: 10.0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50.0),
+              color: Color(0xFF4876F2),
             ),
-            ListTile(
-              title: Text('위치 설정'),
-              onTap: () {
-                // 위치 설정 페이지로 이동
-                Navigator.pop(context); // Drawer 닫기
-                // TODO: 위치 설정 페이지로 이동하는 코드 추가
-              },
-            ),
-            ListTile(
-              title: Text('프로필 변경'),
-              onTap: () {
-                // 프로필 변경 페이지로 이동
-                Navigator.pop(context); // Drawer 닫기
-                // TODO: 프로필 변경 페이지로 이동하는 코드 추가
-              },
-            ),
-          ],
-        ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start, // 왼쪽으로 정렬
+            children: [
+              TextButton(
+                onPressed: () {},
+                child: Text(
+                  '프로필 사진 변경',
+                  style: TextStyle(
+                    fontFamily: 'Sandoll',
+                    fontWeight: FontWeight.w500,
+                    fontSize: 15,
+                    color: Color(0xFF4876F2),
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () {},
+                child: Text(
+                  '닉네임 변경',
+                  style: TextStyle(
+                    fontFamily: 'Sandoll',
+                    fontWeight: FontWeight.w500,
+                    fontSize: 15,
+                    color: Color(0xFF4876F2),
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () {},
+                child: Text(
+                  '환경설정',
+                  style: TextStyle(
+                    fontFamily: 'Sandoll',
+                    fontWeight: FontWeight.w500,
+                    fontSize: 15,
+                    color: Color(0xFF4876F2),
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () {},
+                child: Text(
+                  '고객센터',
+                  style: TextStyle(
+                    fontFamily: 'Sandoll',
+                    fontWeight: FontWeight.w500,
+                    fontSize: 15,
+                    color: Color(0xFF4876F2),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

@@ -29,6 +29,23 @@ class _EmailVerifyPageState extends State<EmailVerifyPage> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Color(0xFF4876F2),
+          elevation: 0, // 앱바의 그림자 없애기
+          automaticallyImplyLeading: false, // 뒤로가기 버튼 제거
+          centerTitle: true,
+          title: Image.asset(
+            'asset/img/wordmark_white.png',
+            width: 90,
+          ),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            color: Colors.white, // 뒤로가기 버튼 색상
+          ),
+        ),
         backgroundColor: const Color(0xFF4876F2),
         body: SingleChildScrollView(
           child: Container(
@@ -38,7 +55,7 @@ class _EmailVerifyPageState extends State<EmailVerifyPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 100),
+                const SizedBox(height: 40),
                 Text(
                   "입력해주신 이메일로 코드가 발송되었습니다!",
                   style: TextStyle(

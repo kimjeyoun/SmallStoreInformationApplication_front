@@ -130,7 +130,12 @@ class _LoginFormState extends State<LoginForm> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              SizedBox(height: 150),
+              SizedBox(height: 60),
+              Image.asset(
+                'asset/img/wordmark_white.png',
+                width: 90,
+              ),
+              SizedBox(height: 100),
               Text(
                 '이미 회원이신가요?',
                 style: TextStyle(
@@ -140,7 +145,7 @@ class _LoginFormState extends State<LoginForm> {
                   fontSize: 20,
                 ),
               ),
-              SizedBox(height: 40),
+              SizedBox(height: 60),
               Align(
                 alignment: Alignment.center,
                 child: SizedBox(
@@ -156,7 +161,7 @@ class _LoginFormState extends State<LoginForm> {
                         color: Color(0xFFB8B8B8), // 원하는 색상으로 조정
                       ),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+                        borderRadius: BorderRadius.circular(4.0),
                         borderSide: BorderSide.none,
                       ),
                       filled: true,
@@ -166,7 +171,7 @@ class _LoginFormState extends State<LoginForm> {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 15),
               Align(
                 alignment: Alignment.center,
                 child: SizedBox(
@@ -182,7 +187,7 @@ class _LoginFormState extends State<LoginForm> {
                         color: Color(0xFFB8B8B8), // 원하는 색상으로 조정
                       ),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+                        borderRadius: BorderRadius.circular(4.0),
                         borderSide: BorderSide.none,
                       ),
                       filled: true,
@@ -218,13 +223,15 @@ class _LoginFormState extends State<LoginForm> {
                   ),
                 ),
               ),
-              SizedBox(height: 30),
+              SizedBox(height: 10),
               TextButton(
                 onPressed: () {
                   Navigator.pushNamed(context, '/selection');
                 },
                 style: TextButton.styleFrom(
+                  minimumSize: Size.zero,
                   padding: EdgeInsets.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   alignment: Alignment.center,
                 ),
                 child: Opacity(
@@ -250,23 +257,45 @@ class _LoginFormState extends State<LoginForm> {
                   ),
                 ),
               ),
+              SizedBox(height: 10),
               TextButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, '/map');
+                  Navigator.pushNamed(context, '/pwfindfirst');
                 },
-                child: Text('kakao map'),
+                style: TextButton.styleFrom(
+                  minimumSize: Size.zero,
+                  padding: EdgeInsets.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  alignment: Alignment.center,
+                ),
+                child: Opacity(
+                  opacity: 0.8,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border(
+                          bottom: BorderSide(color: Colors.white)
+                      ),
+                    ),
+                    child: Opacity(
+                      opacity: 0.8,
+                      child: Text(
+                        '비밀번호를 잊으셨나요?',
+                        style: TextStyle(
+                          fontFamily: 'Sandoll',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ),
               TextButton(
                 onPressed: () {
                   Navigator.pushNamed(context, '/main');
                 },
                 child: Text('main'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/mypage');
-                },
-                child: Text('mypage'),
               ),
             ],
           ),
