@@ -398,8 +398,8 @@ class _AdditionalBusinessInfoPageState extends State<AdditionalBusinessInfoPage>
           headers: headers, body: json.encode(body));
 
       if (response.statusCode == 200) {
-        _showDialog('가게 등록 성공', '다음으로 버튼을 눌러주세요.');
-
+        _showDialog('가게 등록 성공', '로그인을 해주세요.');
+        Navigator.pushNamed(context, '/login');
       } else {
         // 기타 오류
         print('가게 등록 오류 ${response.statusCode}');

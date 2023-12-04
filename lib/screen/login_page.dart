@@ -26,77 +26,7 @@ class _LoginFormState extends State<LoginForm> {
   TextEditingController _passwordController = TextEditingController();
   static final storage = FlutterSecureStorage();
 
-  void _login(String id, String password, BuildContext context) async {
-    // String url = 'http://15.165.151.223:3000/users/login';
-    String url = 'http://10.0.2.2:3000/users/login';
-
-    Map<String, String> headers = {
-      'Content-Type': 'application/json',
-    };
-
-    Map<String, String> body = {
-      'id': id,
-      'password': password,
-    };
-
-    try {
-      http.Response response = await http.post(Uri.parse(url),
-          headers: headers, body: json.encode(body));
-
-      if (response.statusCode == 200) {
-        // 로그인 성공
-        // HTTP 응답 헤더 데이터
-        Map<String, String> headers = response.headers;
-
-        // token 값 추출
-        String? refreshToken = headers['refreshtoken']?.replaceFirst('bearer ', "");
-        String? accessToken = headers['authorization']?.replaceFirst('bearer ', "");
-
-        await storage.write(key: 'refreshToken', value: refreshToken);
-        await storage.write(key: 'accessToken', value: accessToken);
-        _showDialog('로그인 성공', '환영합니다!');
-        // 로그인 성공 시 처리할 로직 추가
-        // 예: 홈 페이지로 이동 또는 다른 작업 수행
-        Navigator.pushNamed(context, '/main');
-      } else {
-        // 기타 오류
-        print("로그인 실패1 ${response.statusCode}");
-        _showDialog('오류', '로그인 중에 오류가 발생했습니다.');
-      }
-    } catch (e) {
-      print("트라이문 오류");
-      _showDialog('오류', '서버와 통신 중에 오류가 발생했습니다.');
-    }
-  }
-
-  void _logout(BuildContext context) async {
-    String url = 'http://10.0.2.2:3000/users/logout';
-    String? refreshToken = await storage.read(key: 'refreshToken');
-    String? accessToken = await storage.read(key: 'accessToken');
-
-    try {
-      http.Response response = await http.get(
-          Uri.parse(url),
-          headers: {
-            'Authorization': 'bearer $accessToken',
-            'refreshToken': 'bearer $refreshToken',
-          });
-
-      //storage.delete(key: 'refreshToken');
-      //storage.delete(key: 'accessToken');
-
-      if (response.statusCode == 200) {
-        _showDialog('로그아웃 성공', '안녕히가세요!');
-      } else {
-        // 로그인 실패
-        print("로그아웃 실패 ${response.statusCode}");
-        _showDialog('로그아웃 실패', 'error');
-      };
-    } catch (e) {
-      print("트라이문 오류${e}");
-      _showDialog('오류', '서버와 통신 중에 오류가 발생했습니다.');
-    }
-  }
+  String loginType = 'localLogin';
 
   void _showDialog(String title, String message) {
     showDialog(
@@ -302,6 +232,80 @@ class _LoginFormState extends State<LoginForm> {
         ),
       ),
     );
+  }
+
+
+  void _login(String id, String password, BuildContext context) async {
+    // String url = 'http://15.165.151.223:3000/users/login';
+    String url = 'http://10.0.2.2:3000/users/login';
+
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+    };
+
+    Map<String, String> body = {
+      'id': id,
+      'loginType' : loginType,
+      'password': password,
+    };
+
+    try {
+      http.Response response = await http.post(Uri.parse(url),
+          headers: headers, body: json.encode(body));
+
+      if (response.statusCode == 200) {
+        // 로그인 성공
+        // HTTP 응답 헤더 데이터
+        Map<String, String> headers = response.headers;
+
+        // token 값 추출
+        String? refreshToken = headers['refreshtoken']?.replaceFirst('bearer ', "");
+        String? accessToken = headers['authorization']?.replaceFirst('bearer ', "");
+
+        await storage.write(key: 'refreshToken', value: refreshToken);
+        await storage.write(key: 'accessToken', value: accessToken);
+        _showDialog('로그인 성공', '환영합니다!');
+        // 로그인 성공 시 처리할 로직 추가
+        // 예: 홈 페이지로 이동 또는 다른 작업 수행
+        Navigator.pushNamed(context, '/main');
+      } else {
+        // 기타 오류
+        print("로그인 실패1 ${response.statusCode}");
+        _showDialog('오류', '로그인 중에 오류가 발생했습니다.');
+      }
+    } catch (e) {
+      print("트라이문 오류");
+      _showDialog('오류', '서버와 통신 중에 오류가 발생했습니다.');
+    }
+  }
+
+  void _logout(BuildContext context) async {
+    String url = 'http://10.0.2.2:3000/users/logout';
+    String? refreshToken = await storage.read(key: 'refreshToken');
+    String? accessToken = await storage.read(key: 'accessToken');
+
+    try {
+      http.Response response = await http.get(
+          Uri.parse(url),
+          headers: {
+            'Authorization': 'bearer $accessToken',
+            'refreshToken': 'bearer $refreshToken',
+          });
+
+      //storage.delete(key: 'refreshToken');
+      //storage.delete(key: 'accessToken');
+
+      if (response.statusCode == 200) {
+        _showDialog('로그아웃 성공', '안녕히가세요!');
+      } else {
+        // 로그인 실패
+        print("로그아웃 실패 ${response.statusCode}");
+        _showDialog('로그아웃 실패', 'error');
+      };
+    } catch (e) {
+      print("트라이문 오류${e}");
+      _showDialog('오류', '서버와 통신 중에 오류가 발생했습니다.');
+    }
   }
 }
 

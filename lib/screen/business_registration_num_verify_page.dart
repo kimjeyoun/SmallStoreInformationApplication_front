@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:where_shop_project/screen/additional_business_info_page.dart';
 
 class BusinessRegistrationNumVerifyPage extends StatefulWidget {
@@ -206,10 +208,10 @@ class _BusinessRegistrationNumVerifyPageState extends State<BusinessRegistration
                                 ),
                                 ElevatedButton(
                                   onPressed: () {
-                                    String phoneNum = _businessNumController.text;
+                                    String businessNum = _businessNumController.text;
 
                                     if (!_businessNumController.text.isEmpty) {
-                                      Navigator.pushNamed(context, '/businessAddInfo');
+                                      _businessNumVerify(businessNum);
                                     } else if (_businessNumController.text.isEmpty) {
                                       _showDialog('오류', '사업자번호을 입력해주세요.');
                                     } else {
@@ -375,7 +377,6 @@ class _BusinessRegistrationNumVerifyPageState extends State<BusinessRegistration
                                 !_businessNameController.text.isEmpty &&
                                 !_businessLocationController.text.isEmpty &&
                                 !_businessPhoneNumController.text.isEmpty) {
-                                  Navigator.pushNamed(context, '/businessAddInfo');
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -415,5 +416,33 @@ class _BusinessRegistrationNumVerifyPageState extends State<BusinessRegistration
           )
       ),
     );
+  }
+  void _businessNumVerify(String b_no) async {
+    String url = 'http://10.0.2.2:3000/shop/shopNumStatus';
+
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+    };
+
+    Map<String, dynamic> body = {
+      'b_no' : b_no,
+    };
+
+    try {
+      http.Response response = await http.post(Uri.parse(url),
+          headers: headers, body: json.encode(body));
+
+      if (response.statusCode == 200) {
+        _showDialog('인증 성공', '추가정보를 입력후 다음으로 버튼을 눌러주세요.');
+      } else {
+        // 기타 오류
+        print('사업자 번호 인증 오류 ${response.statusCode}');
+        print('body: $body');
+        _showDialog('오류', '사업자 번호 인증 오류가 발생했습니다.');
+      }
+    } catch (e) {
+      print("response : ${e}");
+      _showDialog('오류', '서버와 통신 중에 오류가 발생했습니다.');
+    }
   }
 }

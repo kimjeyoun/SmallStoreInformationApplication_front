@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:where_shop_project/screen/pw_find_second_page.dart';
 
 class PwFindFirstPage extends StatefulWidget {
   @override
@@ -12,16 +13,16 @@ class _PwFindFirstPageState extends State<PwFindFirstPage> {
   FocusNode _idFocusNode = FocusNode();
   bool _showLabel_id = true;
 
-  FocusNode _emailFocusNode = FocusNode();
-  bool _showLabel_email = true;
+  FocusNode _phoneNumFocusNode = FocusNode();
+  bool _showLabel_phoneNum = true;
 
-  FocusNode _codeFocusNode = FocusNode();
-  bool _showLabel_code = true;
+  FocusNode _verifyNumFocusNode = FocusNode();
+  bool _showLabel_verifyNum = true;
 
   // 컨트롤러
   TextEditingController _idController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _codeController = TextEditingController();
+  TextEditingController _phoneNumController = TextEditingController();
+  TextEditingController _verifyNumController = TextEditingController();
 
   String _selectedDomain = '직접입력'; // 초기 선택 도메인
 
@@ -41,17 +42,38 @@ class _PwFindFirstPageState extends State<PwFindFirstPage> {
         _showLabel_id = !_idFocusNode.hasFocus;
       });
     });
-    _emailFocusNode.addListener(() {
+    _phoneNumFocusNode.addListener(() {
       setState(() {
-        _showLabel_email =
-        !_emailFocusNode.hasFocus; // 포커스가 없을 때에만 _showLabel을 true로 설정
+        _showLabel_phoneNum =
+        !_phoneNumFocusNode.hasFocus; // 포커스가 없을 때에만 _showLabel을 true로 설정
       });
     });
-    _codeFocusNode.addListener(() {
+    _verifyNumFocusNode.addListener(() {
       setState(() {
-        _showLabel_code = !_codeFocusNode.hasFocus;
+        _showLabel_verifyNum =
+        !_verifyNumFocusNode.hasFocus; // 포커스가 없을 때에만 _showLabel을 true로 설정
       });
     });
+  }
+
+  void _showDialog(String title, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: Text('확인'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void pwFind(String email, String id) async {
@@ -188,128 +210,78 @@ class _PwFindFirstPageState extends State<PwFindFirstPage> {
                         ),
                       ),
 
+                      // phoneNum TextField
                       Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Flexible(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  SizedBox(height: 12),
-                                  Stack(
-                                    alignment: Alignment.centerRight,
-                                    children: [
-                                      TextField(
-                                        focusNode: _emailFocusNode,
-                                        controller: _emailController,
-                                        onTap: () {
-                                          setState(() {
-                                            _showLabel_email = false;
-                                          });
-                                        },
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                        ),
-                                        decoration: InputDecoration(
-                                          labelText:
-                                          _showLabel_email ? '이메일' : null,
-                                          labelStyle: TextStyle(
-                                            fontFamily: 'Sandoll',
-                                            fontSize: 13,
-                                            color: Colors.grey.withOpacity(0.5),
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                          filled: true, // 배경 색상을 사용하도록 설정
-                                          fillColor: Colors.white, // 배경 색상 설정
-                                          contentPadding: EdgeInsets.symmetric(
-                                            horizontal: 10,
-                                            vertical: 15,
-                                          ),
-                                          isDense: true,
-                                          border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(3.5),
-                                            borderSide: BorderSide.none,
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                              borderSide: BorderSide(
-                                                color: Colors.white,
-                                              )
-                                          ),
-                                        ),
-                                      ),
-                                      Positioned(
-                                        right: 10,
-                                        child: Container(
-                                          width: 106,
-                                          height: 23,
-                                          padding: EdgeInsets.only(left: 5.0),
-                                          decoration: BoxDecoration(
-                                              color: Colors.grey.withOpacity(0.6),
-                                              borderRadius: BorderRadius.circular(2.0)
-                                          ),
-                                          child: DropdownButton<String>(
-                                            value: _selectedDomain,
-                                            onChanged: (String? newValue) {
-                                              if (newValue != null) {
-                                                setState(() {
-                                                  _selectedDomain = newValue;
-                                                });
-                                              }
-                                            },
-                                            items: _domainOptions.map<DropdownMenuItem<String>>(
-                                                  (String domain) {
-                                                return DropdownMenuItem<String>(
-                                                  value: domain,
-                                                  child: Text(
-                                                    domain,
-                                                    style: TextStyle(
-                                                      fontFamily: 'Sandoll',
-                                                      fontSize: 13,
-                                                      color: Colors.black.withOpacity(0.3),
-                                                      fontWeight: FontWeight.w600,
-                                                    ),
-                                                  ),
-                                                );
-                                              },
-                                            ).toList(),
-                                            underline: SizedBox.shrink(),
-                                            icon: Icon(
-                                              Icons.arrow_drop_down,
-                                              size: 24,
-                                              color: Colors.white,
-                                            ), // 아이콘을 사용하지 않음
-                                            iconDisabledColor: Color(
-                                                0xFFD4DBEE),
-                                            iconEnabledColor: Color(
-                                                0xFFD4DBEE),
-                                            dropdownColor: Colors.grey,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                          // email TextField
+                          Container(
+                            width: 210,
+                            child: TextField(
+                              focusNode: _phoneNumFocusNode,
+                              controller: _phoneNumController,
+                              onTap: () {
+                                setState(() {
+                                  _showLabel_phoneNum = false;
+                                });
+                              },
+                              showCursor: false, // 커서 숨기기
+                              style: TextStyle(
+                                fontSize: 15,
+                              ),
+                              decoration: InputDecoration(
+                                  filled: true, // 배경 색상을 사용하도록 설정
+                                  fillColor: Colors.white, // 배경 색상 설정
+                                  labelText:
+                                  _showLabel_phoneNum ? '전화번호' : null,
+                                  labelStyle: TextStyle(
+                                    fontFamily: 'Sandoll',
+                                    fontSize: 13,
+                                    color: Colors.grey.withOpacity(0.5),
+                                    fontWeight: FontWeight.w600,
                                   ),
-                                ],
-                              )
+                                  contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 13.2
+                                  ),
+                                  isDense: true,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(3.5),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: Colors.white,
+                                      )
+                                  )
+                              ),
+                            ),
                           ),
-                          SizedBox(width: 10),
                           ElevatedButton(
                             onPressed: () {
-                              String email = _emailController.text;
-                              _emailVerify(email);
+                              String id = _idController.text;
+                              String phoneNum = _phoneNumController.text;
+
+                              if (!_phoneNumController.text.isEmpty) {
+                                _smsVerify(id, phoneNum, context);
+                              } else if (_phoneNumController.text.isEmpty) {
+                                _showDialog('오류', '전화번호을 입력해주세요.');
+                              } else {
+                                _showDialog('오류', '알수없는 오류');
+                              }
                             },
                             style: ElevatedButton.styleFrom(
                               primary: Color(0xFF143386),
-                              minimumSize: Size(50, 50),
+                              minimumSize: Size(70, 50),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(3.0), // 원하는 모서리 반지름 값을 설정
-                              ),
+                                  borderRadius: BorderRadius.circular(8)),
                             ),
                             child: Text(
-                              '인증',
+                              '인증하기',
                               style: TextStyle(
                                 fontFamily: 'Sandoll',
                                 fontWeight: FontWeight.w600,
-                                fontSize: 15,
+                                fontSize: 13,
                                 color: Colors.white,
                               ),
                             ),
@@ -317,15 +289,15 @@ class _PwFindFirstPageState extends State<PwFindFirstPage> {
                         ],
                       ),
 
-                      SizedBox(height: 40),
+                      SizedBox(height: 25),
 
-                      // code TextField
+                      // verifyNum TextField
                       TextField(
-                        focusNode: _codeFocusNode,
-                        controller: _codeController,
+                        focusNode: _verifyNumFocusNode,
+                        controller: _verifyNumController,
                         onTap: () {
                           setState(() {
-                            _showLabel_code = false;
+                            _showLabel_verifyNum = false;
                           });
                         },
                         showCursor: false, // 커서 숨기기
@@ -336,7 +308,50 @@ class _PwFindFirstPageState extends State<PwFindFirstPage> {
                             filled: true, // 배경 색상을 사용하도록 설정
                             fillColor: Colors.white, // 배경 색상 설정
                             labelText:
-                            _showLabel_code ? '코드 6자리' : null,
+                            _showLabel_verifyNum ? '인증번호' : null,
+                            labelStyle: TextStyle(
+                              fontFamily: 'Sandoll',
+                              fontSize: 13,
+                              color: Colors.grey.withOpacity(0.5),
+                              fontWeight: FontWeight.w600,
+                            ),
+                            contentPadding: EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 13.2
+                            ),
+                            isDense: true,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(3.5),
+                              borderSide: BorderSide.none,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Colors.white,
+                                )
+                            )
+                        ),
+                      ),
+
+                      SizedBox(height: 40),
+
+                      // code TextField
+                      TextField(
+                        focusNode: _verifyNumFocusNode,
+                        controller: _verifyNumController,
+                        onTap: () {
+                          setState(() {
+                            _showLabel_verifyNum = false;
+                          });
+                        },
+                        showCursor: false, // 커서 숨기기
+                        style: TextStyle(
+                          fontSize: 15,
+                        ),
+                        decoration: InputDecoration(
+                            filled: true, // 배경 색상을 사용하도록 설정
+                            fillColor: Colors.white, // 배경 색상 설정
+                            labelText:
+                            _showLabel_verifyNum ? '코드 6자리' : null,
                             labelStyle: TextStyle(
                               fontFamily: 'Sandoll',
                               fontSize: 13,
@@ -378,9 +393,11 @@ class _PwFindFirstPageState extends State<PwFindFirstPage> {
 
                       ElevatedButton(
                         onPressed: () {
-                          String email = _emailController.text;
+                          String phone = _phoneNumController.text;
+                          String randomCode = _verifyNumController.text;
+                          String type = 'findPW';
                           String id = _idController.text;
-                          pwFind(email, id);
+                          _smsRandomCodeVerify(phone, randomCode, type, id);
                         },
                         style: ElevatedButton.styleFrom(
                           primary: Color(0xFF143386),
@@ -408,5 +425,78 @@ class _PwFindFirstPageState extends State<PwFindFirstPage> {
         )
       ),
     );
+  }
+
+  // 랜덤 코드 전송
+  void _smsVerify(String id, String phonenum, BuildContext context) async {
+    String url = 'http://10.0.2.2:3000/users/sms/findPW';
+
+
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+    };
+
+    Map<String, dynamic> body = {
+      'id': id,
+      'phone': phonenum,
+    };
+
+    try {
+      http.Response response = await http.post(Uri.parse(url),
+          headers: headers, body: json.encode(body));
+
+      if (response.statusCode == 200) {
+        _showDialog('인증코드 발송', '코드 입력후 다음으로 버튼을 눌러주세요.');
+      } else {
+        // 기타 오류
+        print('sms인증 오류 ${response.statusCode}');
+        print('body: $body');
+        _showDialog('오류', 'sms인증 오류가 발생했습니다.');
+      }
+    } catch (e) {
+      print("response : ${e}");
+      _showDialog('오류', '서버와 통신 중에 오류가 발생했습니다.');
+    }
+  }
+
+  // 인증 확인
+  void _smsRandomCodeVerify(String phoneNum, String randomCode,
+      String type, String id) async {
+    String url = 'http://10.0.2.2:3000/users/sms/verify';
+
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+    };
+
+    Map<String, String> body = {
+      'phone': phoneNum,
+      'randomcode' : randomCode,
+      'type' : type,
+      'user_id' : id,
+    };
+
+
+    try {
+      http.Response response = await http.post(Uri.parse(url),
+          headers: headers, body: json.encode(body));
+
+      if (response.statusCode == 200) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    PwFindSecondPage(phoneNum)
+            )
+        );
+      } else {
+        // 기타 오류
+        print('sms인증 오류 ${response.statusCode}');
+        print('body: $body');
+        _showDialog('오류', 'sms인증 오류가 발생했습니다.');
+      }
+    } catch (e) {
+      print("response : ${e}");
+      _showDialog('오류', '서버와 통신 중에 오류가 발생했습니다.');
+    }
   }
 }

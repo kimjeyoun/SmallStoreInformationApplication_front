@@ -4,6 +4,10 @@ import 'dart:convert';
 import 'package:where_shop_project/screen/email_verify.dart';
 
 class CustomerAddInfoPage extends StatefulWidget {
+  final String id;
+  final String phoneNum;
+
+  const CustomerAddInfoPage(this.id, this.phoneNum);
 
   @override
   _CustomerAddInfoPageState createState() => _CustomerAddInfoPageState();
@@ -167,7 +171,7 @@ class _CustomerAddInfoPageState extends State<CustomerAddInfoPage> {
 
                             SizedBox(height: 25),
 
-                            // verifyNum TextField
+                            // nickname TextField
                             TextField(
                               focusNode: _nicknameFocusNode,
                               controller: _nicknameController,

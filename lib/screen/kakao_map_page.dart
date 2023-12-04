@@ -36,98 +36,14 @@ class _KakaoMapPageState extends State<KakaoMapPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            SizedBox(height: 20),
             Container(
-              height: 200, // 높이를 250으로 설정
+              height: 180, // 높이를 250으로 설정
               padding: EdgeInsets.all(0),
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: Color(0xff4876F2), // 보더의 색상 설정
-                    width: 2.8, // 보더의 두께 설정
-                  ),
-                ),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(height: 60),
-                  // 로고 영역
-                  Image.asset(
-                    'asset/img/wordmark_main.png',
-                    width: 100, // 이미지의 너비
-                    height: 30, // 이미지의 높이
-                  ),
-                  SizedBox(height: 20),
-                  // 검색바
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                        vertical: 0,
-                        horizontal: 60
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // 검색 입력 필드
-                        Expanded(
-                          child: Container(
-                            width: double.infinity,
-                            height: 30,
-                            margin: EdgeInsets.only(top: 5.0),
-                            decoration: BoxDecoration(
-                              color: Color(0xFFEAEFFB),
-                              borderRadius: BorderRadius.circular(15.0),
-                            ),
-                            child: TextField(
-                              controller: _searchController,
-                              onChanged: (value) {
-                                setState(() {
-                                  _showClearButton = value.isNotEmpty;
-                                });
-                              },
-                              style: TextStyle(
-                                fontFamily: 'Pretendard',
-                                fontSize: 10,
-                                color: Color(0xFF98A8D2),
-                              ),
-                              decoration: InputDecoration(
-                                hintText: "우리동네 알뜰샵을 검색해보세요",
-                                border: InputBorder.none,
-                                isDense: true,
-                                contentPadding: EdgeInsets.only(left: 10, top: 6),
-                                suffixIcon: _showClearButton
-                                    ? IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      _searchController.clear();
-                                      _showClearButton = false;
-                                    });
-                                  },
-                                  color: Color(0xff4876F2),
-                                  padding: EdgeInsets.all(0),
-                                  icon: Icon(
-                                    Icons.close,
-                                  ),
-                                )
-                                    : IconButton(
-                                  onPressed: () {
-                                    print("검색: ${_searchController.text}");
-                                  },
-                                  color: Color(0xff4876F2),
-                                  padding: EdgeInsets.all(0),
-                                  icon: Icon(
-                                    Icons.search,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  )
-                ],
+              child: Image.asset( // 로고 영역
+                'asset/img/wordmark_main.png',
+                width: 100, // 이미지의 너비
+                height: 30, // 이미지의 높이
               ),
             ),
             Expanded(
@@ -238,79 +154,246 @@ class MyDrawer extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Container(
+          Image.asset(
+            'asset/img/wordmark_main.png',
             width: 100,
-            height: 100,
-            child: Text(
-              '로고영역',
-              style: TextStyle(
-                fontSize: 24,
-              ),
-            ),
           ),
           Container(
-            width: 100,
-            height: 100,
-            margin: EdgeInsets.only(bottom: 50),
-            padding: EdgeInsets.only(bottom: 10.0),
+            width: 160,
+            height: 30,
+            margin: EdgeInsets.only(bottom: 70),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(50.0),
-              color: Color(0xFF4876F2),
+                border: Border(
+                    bottom: BorderSide(
+                        width: 1.3,
+                        color: Colors.grey.withOpacity(0.7)
+                    )
+                )
             ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start, // 왼쪽으로 정렬
-            children: [
-              TextButton(
-                onPressed: () {},
-                child: Text(
-                  '프로필 사진 변경',
-                  style: TextStyle(
-                    fontFamily: 'Sandoll',
-                    fontWeight: FontWeight.w500,
-                    fontSize: 15,
-                    color: Color(0xFF4876F2),
+          Container(
+            width: 150,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start, // 왼쪽으로 정렬
+              children: [
+                TextButton(
+                    onPressed: () {},
+                    style: TextButton.styleFrom(
+                      minimumSize: Size.zero,
+                      padding: EdgeInsets.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.fastfood,
+                          color: Color(0xff4876F2),
+                          size: 15,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          '음식점',
+                          style: TextStyle(
+                            fontFamily: 'Sandoll',
+                            fontWeight: FontWeight.w800,
+                            fontSize: 15,
+                            color: Color(0xFF4876F2),
+                          ),
+                        ),
+                      ],
+                    )
+                ),
+                SizedBox(height: 10),
+                TextButton(
+                    onPressed: () {},
+                    style: TextButton.styleFrom(
+                      minimumSize: Size.zero,
+                      padding: EdgeInsets.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.handyman,
+                          color: Color(0xff4876F2),
+                          size: 15,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          '잡화점',
+                          style: TextStyle(
+                            fontFamily: 'Sandoll',
+                            fontWeight: FontWeight.w800,
+                            fontSize: 15,
+                            color: Color(0xFF4876F2),
+                          ),
+                        ),
+                      ],
+                    )
+                ),
+                SizedBox(height: 10),
+                TextButton(
+                    onPressed: () {},
+                    style: TextButton.styleFrom(
+                      minimumSize: Size.zero,
+                      padding: EdgeInsets.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.shopping_cart,
+                          color: Color(0xff4876F2),
+                          size: 15,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          '상점',
+                          style: TextStyle(
+                            fontFamily: 'Sandoll',
+                            fontWeight: FontWeight.w800,
+                            fontSize: 15,
+                            color: Color(0xFF4876F2),
+                          ),
+                        ),
+                      ],
+                    )
+                ),
+                SizedBox(height: 10),
+                TextButton(
+                    onPressed: () {},
+                    style: TextButton.styleFrom(
+                      minimumSize: Size.zero,
+                      padding: EdgeInsets.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.content_cut,
+                          color: Color(0xff4876F2),
+                          size: 15,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          '뷰티',
+                          style: TextStyle(
+                            fontFamily: 'Sandoll',
+                            fontWeight: FontWeight.w800,
+                            fontSize: 15,
+                            color: Color(0xFF4876F2),
+                          ),
+                        ),
+                      ],
+                    )
+                ),
+                SizedBox(height: 10),
+                TextButton(
+                    onPressed: () {},
+                    style: TextButton.styleFrom(
+                      minimumSize: Size.zero,
+                      padding: EdgeInsets.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.local_shipping,
+                          color: Color(0xff4876F2),
+                          size: 15,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          '푸드트럭',
+                          style: TextStyle(
+                            fontFamily: 'Sandoll',
+                            fontWeight: FontWeight.w800,
+                            fontSize: 15,
+                            color: Color(0xFF4876F2),
+                          ),
+                        ),
+                      ],
+                    )
+                ),
+                Container(
+                  width: 160,
+                  height: 30,
+                  margin: EdgeInsets.only(top: 100),
+                  decoration: BoxDecoration(
+                      border: Border(
+                          bottom: BorderSide(
+                              width: 1.3,
+                              color: Colors.grey.withOpacity(0.7)
+                          )
+                      )
                   ),
                 ),
-              ),
-              TextButton(
-                onPressed: () {},
-                child: Text(
-                  '닉네임 변경',
-                  style: TextStyle(
-                    fontFamily: 'Sandoll',
-                    fontWeight: FontWeight.w500,
-                    fontSize: 15,
-                    color: Color(0xFF4876F2),
-                  ),
+                SizedBox(height: 10),
+                Row(
+                  children: [
+                    TextButton(
+                        onPressed: () {},
+                        style: TextButton.styleFrom(
+                          minimumSize: Size.zero,
+                          padding: EdgeInsets.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        child: Row(
+                          children: [
+                            Text(
+                              '고객센터',
+                              style: TextStyle(
+                                  fontFamily: 'Sandoll',
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 17,
+                                  color: Colors.grey.withOpacity(0.7)
+                              ),
+                            ),
+                            SizedBox(width: 67),
+                            Icon(
+                              Icons.call,
+                              color: Colors.grey.withOpacity(0.7),
+                              size: 17,
+                            )
+                          ],
+                        )
+                    ),
+                  ],
                 ),
-              ),
-              TextButton(
-                onPressed: () {},
-                child: Text(
-                  '환경설정',
-                  style: TextStyle(
-                    fontFamily: 'Sandoll',
-                    fontWeight: FontWeight.w500,
-                    fontSize: 15,
-                    color: Color(0xFF4876F2),
-                  ),
+                Row(
+                  children: [
+                    TextButton(
+                        onPressed: () {},
+                        style: TextButton.styleFrom(
+                          minimumSize: Size.zero,
+                          padding: EdgeInsets.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        child: Row(
+                          children: [
+                            Text(
+                              '로그아웃',
+                              style: TextStyle(
+                                  fontFamily: 'Sandoll',
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 17,
+                                  color: Colors.grey.withOpacity(0.7)
+                              ),
+                            ),
+                            SizedBox(width: 67),
+                            Icon(
+                              Icons.exit_to_app,
+                              color: Colors.grey.withOpacity(0.7),
+                              size: 17,
+                            )
+                          ],
+                        )
+                    ),
+                  ],
                 ),
-              ),
-              TextButton(
-                onPressed: () {},
-                child: Text(
-                  '고객센터',
-                  style: TextStyle(
-                    fontFamily: 'Sandoll',
-                    fontWeight: FontWeight.w500,
-                    fontSize: 15,
-                    color: Color(0xFF4876F2),
-                  ),
-                ),
-              ),
-            ],
-          ),
+              ],
+            ),
+          )
         ],
       ),
     );

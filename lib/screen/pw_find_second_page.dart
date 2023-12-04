@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class PwFindSecondPage extends StatefulWidget {
+  final String phone;
+
+  const PwFindSecondPage(this.phone);
+
   @override
   _PwFindSecondPageState createState() => _PwFindSecondPageState();
 }
@@ -252,7 +258,7 @@ class _PwFindSecondPageState extends State<PwFindSecondPage> {
 
                           if (_validatePassword(_passwordController.text)
                               && passwordsMatch) {
-                            // 비밀번호 일치시 넘길 동작
+                            _updatePW(password, widget.phone);
                           } else if (!_validatePassword(_passwordController.text)) {
                             _showDialog('오류', '비밀번호 양식에 맞게 입력해주세요.');
                           } else if (!passwordsMatch) {
@@ -286,5 +292,38 @@ class _PwFindSecondPageState extends State<PwFindSecondPage> {
         ),
       ),
     );
+  }
+  // 비번변경
+  void _updatePW(String password, String phone) async {
+    String url = 'http://10.0.2.2:3000/users/updatePW';
+
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+    };
+
+    Map<String, String> body = {
+      'loginType' : 'localLogin',
+      'password' : password,
+      'phone': phone,
+    };
+
+
+    try {
+      http.Response response = await http.put(Uri.parse(url),
+          headers: headers, body: json.encode(body));
+
+      if (response.statusCode == 200) {
+        _showDialog('비밀번호 변경 완료', '다시 로그인을 해주세요.');
+        Navigator.pushNamed(context, '/login');
+      } else {
+        // 기타 오류
+        print('sms인증 오류 ${response.statusCode}');
+        print('body: $body');
+        _showDialog('오류', 'sms인증 오류가 발생했습니다.');
+      }
+    } catch (e) {
+      print("response : ${e}");
+      _showDialog('오류', '서버와 통신 중에 오류가 발생했습니다.');
+    }
   }
 }

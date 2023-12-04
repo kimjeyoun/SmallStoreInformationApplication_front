@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:where_shop_project/screen/home_div.dart';
 import 'package:where_shop_project/screen/event_div.dart';
 
@@ -21,6 +23,46 @@ class _MainPageState extends State<MainPage> {
   int _currentPage = 0;
 
   bool isDrawerOpen = false;
+  String address = '경기도 군포시';
+
+  late final Object responrStore;
+  late http.Response shopData;
+
+  void fetchAndDisplayShopData() async {
+    shopData = await _showShop(address);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchAndDisplayShopData();
+  }
+
+  @override
+  void dispose() {
+    _eventViewController.dispose();
+    super.dispose();
+  }
+
+  void _showDialog(String title, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: Text('확인'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +73,9 @@ class _MainPageState extends State<MainPage> {
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
+        setState(() {
+          _currentIndex = 2;
+        });
       },
       child: Scaffold(
           key: _scaffoldKey, // Scaffold에 key를 설정
@@ -96,9 +141,11 @@ class _MainPageState extends State<MainPage> {
                               suffixIcon: _showClearButton
                                   ? IconButton(
                                 onPressed: () {
+                                  String keyword = _searchController.text;
                                   setState(() {
                                     _searchController.clear();
                                     _showClearButton = false;
+                                    responrStore = _searchShop(keyword);
                                   });
                                 },
                                 color: Color(0xff4876F2),
@@ -427,10 +474,60 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  @override
-  void dispose() {
-    _eventViewController.dispose();
-    super.dispose();
+  // 가게 검색
+  Future<http.Response> _searchShop(String keyword) async {
+    String url = 'http://10.0.2.2:3000/shop/searchShop';
+
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'keyword': keyword,
+    };
+
+    try {
+      http.Response response = await http.get(Uri.parse(url), headers: headers);
+
+      if (response.statusCode == 200) {
+        print('respone : ${response.body}');
+        return response;
+      } else {
+        // 기타 오류
+        print('가게 검색 오류 ${response.statusCode}');
+        _showDialog('오류', '가게 검색중 오류가 발생했습니다.');
+        return Future.error('가게 검색중 오류가 발생했습니다.');
+      }
+    } catch (e) {
+      print("response : ${e}");
+      _showDialog('오류', '서버와 통신 중에 오류가 발생했습니다.');
+      return Future.error('서버와 통신 중에 오류가 발생했습니다.');
+    }
+  }
+
+  // 가게 데이터 불러오기
+  Future<http.Response> _showShop(String address) async {
+    String url = 'http://10.0.2.2:3000/shop/showShop';
+
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'address': address,
+    };
+
+    try {
+      http.Response response = await http.get(Uri.parse(url), headers: headers);
+
+      if (response.statusCode == 200) {
+        print('respone : ${response.body}');
+        return response;
+      } else {
+        // 기타 오류
+        print('가게 데이터 불러오기 오류 ${response.statusCode}');
+        _showDialog('오류', '가게 데이터 불러오기 오류');
+        return Future.error('가게 데이터 불러오기 오류');
+      }
+    } catch (e) {
+      print("response : ${e}");
+      _showDialog('오류', '서버와 통신 중에 오류가 발생했습니다.');
+      return Future.error('서버와 통신 중에 오류가 발생했습니다.');
+    }
   }
 }
 
