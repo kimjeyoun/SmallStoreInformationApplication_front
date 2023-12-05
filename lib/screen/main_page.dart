@@ -23,19 +23,14 @@ class _MainPageState extends State<MainPage> {
   int _currentPage = 0;
 
   bool isDrawerOpen = false;
-  String address = '경기도 군포시';
+
 
   late final Object responrStore;
-  late http.Response shopData;
 
-  void fetchAndDisplayShopData() async {
-    shopData = await _showShop(address);
-  }
 
   @override
   void initState() {
     super.initState();
-    fetchAndDisplayShopData();
   }
 
   @override
@@ -494,34 +489,6 @@ class _MainPageState extends State<MainPage> {
         print('가게 검색 오류 ${response.statusCode}');
         _showDialog('오류', '가게 검색중 오류가 발생했습니다.');
         return Future.error('가게 검색중 오류가 발생했습니다.');
-      }
-    } catch (e) {
-      print("response : ${e}");
-      _showDialog('오류', '서버와 통신 중에 오류가 발생했습니다.');
-      return Future.error('서버와 통신 중에 오류가 발생했습니다.');
-    }
-  }
-
-  // 가게 데이터 불러오기
-  Future<http.Response> _showShop(String address) async {
-    String url = 'http://10.0.2.2:3000/shop/showShop';
-
-    Map<String, String> headers = {
-      'Content-Type': 'application/json',
-      'address': address,
-    };
-
-    try {
-      http.Response response = await http.get(Uri.parse(url), headers: headers);
-
-      if (response.statusCode == 200) {
-        print('respone : ${response.body}');
-        return response;
-      } else {
-        // 기타 오류
-        print('가게 데이터 불러오기 오류 ${response.statusCode}');
-        _showDialog('오류', '가게 데이터 불러오기 오류');
-        return Future.error('가게 데이터 불러오기 오류');
       }
     } catch (e) {
       print("response : ${e}");

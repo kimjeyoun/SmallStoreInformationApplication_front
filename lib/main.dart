@@ -8,6 +8,8 @@ import 'package:where_shop_project/screen/kakao_map_page.dart';
 import 'package:where_shop_project/screen/main_page.dart';
 import 'package:where_shop_project/screen/my_page.dart';
 import 'package:where_shop_project/screen/pw_find_first_page.dart';
+import 'package:where_shop_project/screen/my_page_business.dart';
+import 'package:where_shop_project/screen/store_page.dart';
 
 void main() {
   AuthRepository.initialize(appKey: 'fa4f3ec1c61f1d480b71d4d0c2ce927b');
@@ -30,6 +32,8 @@ class MyApp extends StatelessWidget {
         '/main': (context) => MainPage(),
         '/mypage': (context) => MyPage(),
         '/pwfindfirst': (context) => PwFindFirstPage(),
+        '/mypagebn' : (context) => MyPageBusiness(),
+        '/storedetale' : (context) => StorePage(),
       },
     );
   }

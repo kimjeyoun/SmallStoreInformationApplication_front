@@ -227,6 +227,12 @@ class _LoginFormState extends State<LoginForm> {
                 },
                 child: Text('main'),
               ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/mypagebn');
+                },
+                child: Text('mypagebn'),
+              ),
             ],
           ),
         ),

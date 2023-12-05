@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class HomeDiv extends StatefulWidget {
   @override
@@ -8,12 +10,73 @@ class HomeDiv extends StatefulWidget {
 class _HomeDivState extends State<HomeDiv> {
   PageController _eventViewController = PageController(initialPage: 0);
   int _currentPage = 0;
-  bool isLiked_0 = false;
-  bool isLiked_1 = false;
-  bool isLiked_2 = false;
-  bool isLiked_3 = false;
-  bool isLiked_4 = false;
-  bool isLiked_5 = false;
+  late List<bool> isLikedList;
+
+  final List<Map<String, String>> shopData = [
+    {
+      'storeImg': 'url',
+      'storeName': '프루터프룻',
+      'storeAddress': '경기도 군포시',
+      'storeInfo': '맛있는 과일 가게',
+    },
+    {
+      'storeImg': 'url',
+      'storeName': '라멘 가게',
+      'storeAddress': '경기도 광명시',
+      'storeInfo': '맛있는 라멘 가게',
+    },
+    {
+      'storeImg': 'url',
+      'storeName': '철물점 철물',
+      'storeAddress': '경기도 안양시',
+      'storeInfo': '제일가는 철물점',
+    },
+    {
+      'storeImg': 'url',
+      'storeName': '하나만 팔아',
+      'storeAddress': '경기도 구리시',
+      'storeInfo': '진짜 하나만 팜',
+    },
+    // Add more shop data as needed
+  ];
+
+  String address = '경기도 군포시';
+  late http.Response shopData2;
+
+  void fetchAndDisplayShopData() async {
+    shopData2 = await _showShop(address);
+  }
+
+  void updateIsLikedList() {
+    isLikedList = List.generate(shopData.length, (index) => false);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchAndDisplayShopData();
+    updateIsLikedList();
+  }
+
+  void _showDialog(String title, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: Text('확인'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,529 +151,148 @@ class _HomeDivState extends State<HomeDiv> {
              ),
            ],
          ),
-         Row(
-           mainAxisAlignment: MainAxisAlignment.center,
-           children: [
-             Container(
-               width: 160,
-               height: 180.0,
-               margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
-               decoration: BoxDecoration(
-                 borderRadius: BorderRadius.circular(10.0),
-                 color: Colors.white,
-                 boxShadow: [
-                   BoxShadow(
-                     color: Color(0xFFCFDAF6), // 그림자의 색상
-                     offset: Offset(6, 6), // 그림자의 위치 (수직, 수평)
-                     blurRadius: 6.0, // 그림자의 흐림 정도
-                     spreadRadius: 1.0, // 그림자의 전파 정도
-                   ),
-                 ],
-               ),
-               child: Padding(
-                 padding: EdgeInsets.symmetric(
-                   vertical: 10,
-                   horizontal: 10,
-                 ),
-                 child: Column(
+         Container(
+           height: MediaQuery.of(context).size.height - 247, // 화면의 높이에서 헤더 등의 높이를 빼서 남은 부분에 리스트뷰가 채워지도록 설정
+           child: ListView.builder(
+             physics: ClampingScrollPhysics(), // 스크롤 가능하도록 설정
+             shrinkWrap: true,
+             itemCount: (shopData.length / 2).ceil(),
+             itemBuilder: (context, rowIndex) {
+               final isLastRow = rowIndex == (shopData.length / 2).ceil() - 1;
+               return Container(
+                 margin: EdgeInsets.only(left: isLastRow ? 20 : 0),
+                 child: Row(
+                   mainAxisAlignment: isLastRow ? MainAxisAlignment.start : MainAxisAlignment.center,
                    children: [
-                     Container(
-                       width: 140,
-                       height: 90,
-                       decoration: BoxDecoration(
-                         borderRadius: BorderRadius.circular(8.0),
-                         image: DecorationImage(
-                           image: AssetImage('asset/img/test_img.jpg'),
-                           fit: BoxFit.cover,
-                         ),
-                       ),
-                     ),
-                     SizedBox(height: 8),
-                     // 좋아요 버튼
-                     Row(
-                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                       children: [
-                         // 텍스트
-                         Text(
-                           '프루티프룻',
-                           style: TextStyle(
-                               fontSize: 12.0,
-                               color: Color(0xFF7C869F),
-                               fontWeight: FontWeight.w600
-                           ),
-                         ),
-                         Text(
-                           '군포시 산본동',
-                           style: TextStyle(
-                             fontSize: 6.2,
-                             color: Colors.grey,
-                           ),
-                         ),
-                         IconButton(
-                           icon: Icon(
-                             isLiked_0 ? Icons.favorite : Icons.favorite_border,
-                             color: isLiked_0 ? Colors.red : null,
-                           ),
-                           iconSize: 20,
-                           padding: EdgeInsets.zero,
-                           constraints: BoxConstraints(),
-                           onPressed: () {
-                             setState(() {
-                               isLiked_0 = !isLiked_0;
-                             });
-                           },
-                         ),
-                       ],
-                     ),
-                     SizedBox(height: 3),
-                     Text(
-                       '산본역 3번출구 5분 거리에 위치한 합리적인 가격의 과일...',
-                       style: TextStyle(
-                         fontSize: 10,
-                         color: Color(0xFF7C869F),
-                         fontWeight: FontWeight.w600,
-                       ),
-                     )
+                     buildShopContainer(shopData[rowIndex * 2], isLikedList[rowIndex * 2], () {
+                       setState(() {
+                         isLikedList[rowIndex * 2] = !isLikedList[rowIndex * 2];
+                       });
+                     }),
+                     SizedBox(width: 10),
+                     if (rowIndex * 2 + 1 < shopData.length)
+                       buildShopContainer(shopData[rowIndex * 2 + 1], isLikedList[rowIndex * 2 + 1], () {
+                         setState(() {
+                           isLikedList[rowIndex * 2 + 1] = !isLikedList[rowIndex * 2 + 1];
+                         });
+                       }),
                    ],
                  ),
-               ),
-             ),
-             SizedBox(width: 5),
-             Container(
-               width: 160,
-               height: 180.0,
-               margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
-               decoration: BoxDecoration(
-                 borderRadius: BorderRadius.circular(10.0),
-                 color: Colors.white,
-                 boxShadow: [
-                   BoxShadow(
-                     color: Color(0xFFCFDAF6), // 그림자의 색상
-                     offset: Offset(6, 6), // 그림자의 위치 (수직, 수평)
-                     blurRadius: 6.0, // 그림자의 흐림 정도
-                     spreadRadius: 1.0, // 그림자의 전파 정도
-                   ),
-                 ],
-               ),
-               child: Padding(
-                 padding: EdgeInsets.symmetric(
-                   vertical: 10,
-                   horizontal: 10,
-                 ),
-                 child: Column(
-                   children: [
-                     Container(
-                       width: 140,
-                       height: 90,
-                       decoration: BoxDecoration(
-                         borderRadius: BorderRadius.circular(8.0),
-                         image: DecorationImage(
-                           image: AssetImage('asset/img/test_img.jpg'),
-                           fit: BoxFit.cover,
-                         ),
-                       ),
-                     ),
-                     SizedBox(height: 8),
-                     // 좋아요 버튼
-                     Row(
-                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                       children: [
-                         // 텍스트
-                         Text(
-                           '프루티프룻',
-                           style: TextStyle(
-                               fontSize: 12.0,
-                               color: Color(0xFF7C869F),
-                               fontWeight: FontWeight.w600
-                           ),
-                         ),
-                         Text(
-                           '군포시 산본동',
-                           style: TextStyle(
-                             fontSize: 6.2,
-                             color: Colors.grey,
-                           ),
-                         ),
-                         IconButton(
-                           icon: Icon(
-                             isLiked_1 ? Icons.favorite : Icons.favorite_border,
-                             color: isLiked_1 ? Colors.red : null,
-                           ),
-                           iconSize: 20,
-                           padding: EdgeInsets.zero,
-                           constraints: BoxConstraints(),
-                           onPressed: () {
-                             setState(() {
-                               isLiked_1 = !isLiked_1;
-                             });
-                           },
-                         ),
-                       ],
-                     ),
-                     SizedBox(height: 3),
-                     Text(
-                       '산본역 3번출구 5분 거리에 위치한 합리적인 가격의 과일...',
-                       style: TextStyle(
-                         fontSize: 10,
-                         color: Color(0xFF7C869F),
-                         fontWeight: FontWeight.w600,
-                       ),
-                     )
-                   ],
-                 ),
-               ),
-             ),
-           ],
-         ),
-         Row(
-           mainAxisAlignment: MainAxisAlignment.center,
-           children: [
-             Container(
-               width: 160,
-               height: 180.0,
-               margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
-               decoration: BoxDecoration(
-                 borderRadius: BorderRadius.circular(10.0),
-                 color: Colors.white,
-                 boxShadow: [
-                   BoxShadow(
-                     color: Color(0xFFCFDAF6), // 그림자의 색상
-                     offset: Offset(6, 6), // 그림자의 위치 (수직, 수평)
-                     blurRadius: 6.0, // 그림자의 흐림 정도
-                     spreadRadius: 1.0, // 그림자의 전파 정도
-                   ),
-                 ],
-               ),
-               child: Padding(
-                 padding: EdgeInsets.symmetric(
-                   vertical: 10,
-                   horizontal: 10,
-                 ),
-                 child: Column(
-                   children: [
-                     Container(
-                       width: 140,
-                       height: 90,
-                       decoration: BoxDecoration(
-                         borderRadius: BorderRadius.circular(8.0),
-                         image: DecorationImage(
-                           image: AssetImage('asset/img/test_img.jpg'),
-                           fit: BoxFit.cover,
-                         ),
-                       ),
-                     ),
-                     SizedBox(height: 8),
-                     // 좋아요 버튼
-                     Row(
-                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                       children: [
-                         // 텍스트
-                         Text(
-                           '프루티프룻',
-                           style: TextStyle(
-                               fontSize: 12.0,
-                               color: Color(0xFF7C869F),
-                               fontWeight: FontWeight.w600
-                           ),
-                         ),
-                         Text(
-                           '군포시 산본동',
-                           style: TextStyle(
-                             fontSize: 6.2,
-                             color: Colors.grey,
-                           ),
-                         ),
-                         IconButton(
-                           icon: Icon(
-                             isLiked_2 ? Icons.favorite : Icons.favorite_border,
-                             color: isLiked_2 ? Colors.red : null,
-                           ),
-                           iconSize: 20,
-                           padding: EdgeInsets.zero,
-                           constraints: BoxConstraints(),
-                           onPressed: () {
-                             setState(() {
-                               isLiked_2 = !isLiked_2;
-                             });
-                           },
-                         ),
-                       ],
-                     ),
-                     SizedBox(height: 3),
-                     Text(
-                       '산본역 3번출구 5분 거리에 위치한 합리적인 가격의 과일...',
-                       style: TextStyle(
-                         fontSize: 10,
-                         color: Color(0xFF7C869F),
-                         fontWeight: FontWeight.w600,
-                       ),
-                     )
-                   ],
-                 ),
-               ),
-             ),
-             SizedBox(width: 5),
-             Container(
-               width: 160,
-               height: 180.0,
-               margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
-               decoration: BoxDecoration(
-                 borderRadius: BorderRadius.circular(10.0),
-                 color: Colors.white,
-                 boxShadow: [
-                   BoxShadow(
-                     color: Color(0xFFCFDAF6), // 그림자의 색상
-                     offset: Offset(6, 6), // 그림자의 위치 (수직, 수평)
-                     blurRadius: 6.0, // 그림자의 흐림 정도
-                     spreadRadius: 1.0, // 그림자의 전파 정도
-                   ),
-                 ],
-               ),
-               child: Padding(
-                 padding: EdgeInsets.symmetric(
-                   vertical: 10,
-                   horizontal: 10,
-                 ),
-                 child: Column(
-                   children: [
-                     Container(
-                       width: 140,
-                       height: 90,
-                       decoration: BoxDecoration(
-                         borderRadius: BorderRadius.circular(8.0),
-                         image: DecorationImage(
-                           image: AssetImage('asset/img/test_img.jpg'),
-                           fit: BoxFit.cover,
-                         ),
-                       ),
-                     ),
-                     SizedBox(height: 8),
-                     // 좋아요 버튼
-                     Row(
-                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                       children: [
-                         // 텍스트
-                         Text(
-                           '프루티프룻',
-                           style: TextStyle(
-                               fontSize: 12.0,
-                               color: Color(0xFF7C869F),
-                               fontWeight: FontWeight.w600
-                           ),
-                         ),
-                         Text(
-                           '군포시 산본동',
-                           style: TextStyle(
-                             fontSize: 6.2,
-                             color: Colors.grey,
-                           ),
-                         ),
-                         IconButton(
-                           icon: Icon(
-                             isLiked_3 ? Icons.favorite : Icons.favorite_border,
-                             color: isLiked_3 ? Colors.red : null,
-                           ),
-                           iconSize: 20,
-                           padding: EdgeInsets.zero,
-                           constraints: BoxConstraints(),
-                           onPressed: () {
-                             setState(() {
-                               isLiked_3 = !isLiked_3;
-                             });
-                           },
-                         ),
-                       ],
-                     ),
-                     SizedBox(height: 3),
-                     Text(
-                       '산본역 3번출구 5분 거리에 위치한 합리적인 가격의 과일...',
-                       style: TextStyle(
-                         fontSize: 10,
-                         color: Color(0xFF7C869F),
-                         fontWeight: FontWeight.w600,
-                       ),
-                     )
-                   ],
-                 ),
-               ),
-             ),
-           ],
-         ),
-         Row(
-           mainAxisAlignment: MainAxisAlignment.center,
-           children: [
-             Container(
-               width: 160,
-               height: 180.0,
-               margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
-               decoration: BoxDecoration(
-                 borderRadius: BorderRadius.circular(10.0),
-                 color: Colors.white,
-                 boxShadow: [
-                   BoxShadow(
-                     color: Color(0xFFCFDAF6), // 그림자의 색상
-                     offset: Offset(6, 6), // 그림자의 위치 (수직, 수평)
-                     blurRadius: 6.0, // 그림자의 흐림 정도
-                     spreadRadius: 1.0, // 그림자의 전파 정도
-                   ),
-                 ],
-               ),
-               child: Padding(
-                 padding: EdgeInsets.symmetric(
-                   vertical: 10,
-                   horizontal: 10,
-                 ),
-                 child: Column(
-                   children: [
-                     Container(
-                       width: 140,
-                       height: 90,
-                       decoration: BoxDecoration(
-                         borderRadius: BorderRadius.circular(8.0),
-                         image: DecorationImage(
-                           image: AssetImage('asset/img/test_img.jpg'),
-                           fit: BoxFit.cover,
-                         ),
-                       ),
-                     ),
-                     SizedBox(height: 8),
-                     // 좋아요 버튼
-                     Row(
-                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                       children: [
-                         // 텍스트
-                         Text(
-                           '프루티프룻',
-                           style: TextStyle(
-                               fontSize: 12.0,
-                               color: Color(0xFF7C869F),
-                               fontWeight: FontWeight.w600
-                           ),
-                         ),
-                         Text(
-                           '군포시 산본동',
-                           style: TextStyle(
-                             fontSize: 6.2,
-                             color: Colors.grey,
-                           ),
-                         ),
-                         IconButton(
-                           icon: Icon(
-                             isLiked_4 ? Icons.favorite : Icons.favorite_border,
-                             color: isLiked_4 ? Colors.red : null,
-                           ),
-                           iconSize: 20,
-                           padding: EdgeInsets.zero,
-                           constraints: BoxConstraints(),
-                           onPressed: () {
-                             setState(() {
-                               isLiked_4 = !isLiked_4;
-                             });
-                           },
-                         ),
-                       ],
-                     ),
-                     SizedBox(height: 3),
-                     Text(
-                       '산본역 3번출구 5분 거리에 위치한 합리적인 가격의 과일...',
-                       style: TextStyle(
-                         fontSize: 10,
-                         color: Color(0xFF7C869F),
-                         fontWeight: FontWeight.w600,
-                       ),
-                     )
-                   ],
-                 ),
-               ),
-             ),
-             SizedBox(width: 5),
-             Container(
-               width: 160,
-               height: 180.0,
-               margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
-               decoration: BoxDecoration(
-                 borderRadius: BorderRadius.circular(10.0),
-                 color: Colors.white,
-                 boxShadow: [
-                   BoxShadow(
-                     color: Color(0xFFCFDAF6), // 그림자의 색상
-                     offset: Offset(6, 6), // 그림자의 위치 (수직, 수평)
-                     blurRadius: 6.0, // 그림자의 흐림 정도
-                     spreadRadius: 1.0, // 그림자의 전파 정도
-                   ),
-                 ],
-               ),
-               child: Padding(
-                 padding: EdgeInsets.symmetric(
-                   vertical: 10,
-                   horizontal: 10,
-                 ),
-                 child: Column(
-                   children: [
-                     Container(
-                       width: 140,
-                       height: 90,
-                       decoration: BoxDecoration(
-                         borderRadius: BorderRadius.circular(8.0),
-                         image: DecorationImage(
-                           image: AssetImage('asset/img/test_img.jpg'),
-                           fit: BoxFit.cover,
-                         ),
-                       ),
-                     ),
-                     SizedBox(height: 8),
-                     // 좋아요 버튼
-                     Row(
-                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                       children: [
-                         // 텍스트
-                         Text(
-                           '프루티프룻',
-                           style: TextStyle(
-                               fontSize: 12.0,
-                               color: Color(0xFF7C869F),
-                               fontWeight: FontWeight.w600
-                           ),
-                         ),
-                         Text(
-                           '군포시 산본동',
-                           style: TextStyle(
-                             fontSize: 6.2,
-                             color: Colors.grey,
-                           ),
-                         ),
-                         IconButton(
-                           icon: Icon(
-                             isLiked_5 ? Icons.favorite : Icons.favorite_border,
-                             color: isLiked_5 ? Colors.red : null,
-                           ),
-                           iconSize: 20,
-                           padding: EdgeInsets.zero,
-                           constraints: BoxConstraints(),
-                           onPressed: () {
-                             setState(() {
-                               isLiked_5 = !isLiked_5;
-                             });
-                           },
-                         ),
-                       ],
-                     ),
-                     SizedBox(height: 3),
-                     Text(
-                       '산본역 3번출구 5분 거리에 위치한 합리적인 가격의 과일...',
-                       style: TextStyle(
-                         fontSize: 10,
-                         color: Color(0xFF7C869F),
-                         fontWeight: FontWeight.w600,
-                       ),
-                     )
-                   ],
-                 ),
-               ),
-             ),
-           ],
+               );
+             },
+           ),
          ),
        ],
      );
+  }
+
+  Widget buildShopContainer(Map<String, String> shop, bool isLiked, VoidCallback onPressed) {
+    return Container(
+      width: 160,
+      height: 180.0,
+      margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10.0),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Color(0xFFCFDAF6),
+            offset: Offset(6, 6),
+            blurRadius: 6.0,
+            spreadRadius: 1.0,
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          vertical: 10,
+          horizontal: 10,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 140,
+              height: 90,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8.0),
+                image: DecorationImage(
+                  image: AssetImage('asset/img/test_img.jpg'),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  shop['storeName'] ?? '',
+                  style: TextStyle(
+                    fontSize: 12.0,
+                    color: Color(0xFF7C869F),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  shop['storeAddress'] ?? '',
+                  style: TextStyle(
+                    fontSize: 6.2,
+                    color: Colors.grey,
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(
+                    isLiked ? Icons.favorite : Icons.favorite_border,
+                    color: isLiked ? Colors.red : null,
+                  ),
+                  iconSize: 20,
+                  padding: EdgeInsets.zero,
+                  constraints: BoxConstraints(),
+                  onPressed: onPressed,
+                ),
+              ],
+            ),
+            SizedBox(height: 3),
+            Text(
+              shop['storeInfo'] ?? '',
+              style: TextStyle(
+                fontSize: 10,
+                color: Color(0xFF7C869F),
+                fontWeight: FontWeight.w600,
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  // 가게 데이터 불러오기
+  Future<http.Response> _showShop(String address) async {
+    String url = 'http://10.0.2.2:3000/shop/showShop';
+
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'address': address,
+    };
+
+    try {
+      http.Response response = await http.get(Uri.parse(url), headers: headers);
+
+      if (response.statusCode == 200) {
+        print('respone : ${response.body}');
+        return response;
+      } else {
+        // 기타 오류
+        print('가게 데이터 불러오기 오류 ${response.statusCode}');
+        _showDialog('오류', '가게 데이터 불러오기 오류');
+        return Future.error('가게 데이터 불러오기 오류');
+      }
+    } catch (e) {
+      print("response : ${e}");
+      _showDialog('오류', '서버와 통신 중에 오류가 발생했습니다.');
+      return Future.error('서버와 통신 중에 오류가 발생했습니다.');
+    }
   }
 }
