@@ -10,7 +10,7 @@ import 'package:where_shop_project/screen/main_page.dart';
 import 'package:where_shop_project/screen/my_page.dart';
 import 'package:where_shop_project/screen/pw_find_first_page.dart';
 import 'package:where_shop_project/screen/my_page_business.dart';
-import 'package:where_shop_project/screen/store_page.dart';
+import 'package:where_shop_project/screen/store_add_item_page.dart';
 
 void main() async{
   await dotenv.load(fileName: ".env");
@@ -29,14 +29,10 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => LogoPage(),
-        '/login' : (context) => LoginPage(),
         '/selection':  (context) => UserTypeSelectionPage(),
         '/map': (context) => KakaoMapPage(),
-        '/main': (context) => MainPage(),
         '/mypage': (context) => MyPage(),
         '/pwfindfirst': (context) => PwFindFirstPage(),
-        '/mypagebn' : (context) => MyPageBusiness(),
-        '/storedetale' : (context) => StorePage(),
       },
     );
   }

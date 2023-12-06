@@ -5,9 +5,13 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:where_shop_project/screen/home_div.dart';
 import 'package:where_shop_project/screen/event_div.dart';
+import 'package:where_shop_project/screen/my_page_business.dart';
+import 'package:where_shop_project/screen/my_page.dart';
 
 class MainPage extends StatefulWidget {
-  const MainPage({Key? key}) : super(key: key);
+  final String userroll;
+  final String shopNum;
+  const MainPage(this.userroll, this.shopNum);
 
   @override
   _MainPageState createState() => _MainPageState();
@@ -465,7 +469,17 @@ class _MainPageState extends State<MainPage> {
                     setState(() {
                       _currentIndex = 4;
                     });
-                    Navigator.pushNamed(context, '/mypage');
+                    if(widget.userroll == 'SHOPOWNER') {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  MyPageBusiness(widget.shopNum)
+                          )
+                      );
+                    } else {
+                      Navigator.pushNamed(context, '/mypage');
+                    }
                   },
                 ),
                 label: '마이페이지',

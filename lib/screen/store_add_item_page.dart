@@ -6,11 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:where_shop_project/screen/login_page.dart';
 
-class StorePage extends StatefulWidget {
-  const StorePage();
+class StoreAddItemPage extends StatefulWidget {
+  final String shopNumber;
+  final String userroll;
+
+  const StoreAddItemPage(this.shopNumber, this.userroll);
 
   @override
-  _StorePageState createState() => _StorePageState();
+  _StoreAddItemPageState createState() => _StoreAddItemPageState();
 }
 
 class Product {
@@ -27,24 +30,29 @@ class Product {
   });
 }
 
-class _StorePageState extends State<StorePage> {
+class _StoreAddItemPageState extends State<StoreAddItemPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>(); // GlobalKey 생성
   int _currentIndex = 4;
 
   List<Product> products = [];
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController priceController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
+  bool showAddProductFields = false;
+  String? selectedImagePath;
+  XFile? imageFile;
+  String address = '경기도 군포시'; // 임시
 
   late http.Response shopData; // 가게 데이터
   late http.Response itemData; // 상품 데이터
 
-  String address = '경기도 군포시'; // 임시 주소
-  String shopNum = '123456'; // 임시 가게 번호
 
   void fetchAndDisplayShopData() async {
     shopData = await _showShop(address);
   }
 
   void fetchAndDisplayItemData() async {
-    itemData = await _showItem(shopNum);
+    itemData = await _showItem(widget.shopNumber);
   }
 
   @override
@@ -54,6 +62,16 @@ class _StorePageState extends State<StorePage> {
     fetchAndDisplayItemData();
   }
 
+  Future<void> _pickImageFromGallery() async {
+    final imagePicker = ImagePicker();
+    final pickedFile = await imagePicker.getImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        selectedImagePath = pickedFile.path;
+      });
+    }
+  }
 
   void _showDialog(String title, String message) {
     showDialog(
@@ -77,26 +95,26 @@ class _StorePageState extends State<StorePage> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, String>> products_test = [
-      { // 임시 상품 데이터
+    final List<Map<String, String>> products2 = [
+      {
         'itemName': '사과',
         'itemPrice': '1500',
         'itemInfo': '맛있는 사과',
-        'itemImg': 'asset/img/apple.jpg',
+        'itemImg': 'url',
         'shopNum': '1',
       },
       {
         'itemName': '포도',
         'itemPrice': '3000',
         'itemInfo': '맛있는 포도',
-        'itemImg': 'asset/img/grape.jpg',
+        'itemImg': 'url',
         'shopNum': '1',
       },
       {
         'itemName': '바나나',
         'itemPrice': '2000',
         'itemInfo': '맛있는 바나나',
-        'itemImg': 'asset/img/banana.jpg',
+        'itemImg': 'url',
         'shopNum': '1',
       },
     ];
@@ -117,20 +135,20 @@ class _StorePageState extends State<StorePage> {
                 child: Image.asset(
                   'asset/img/test_img.jpg',
                   fit: BoxFit.cover,
-                ),
+                )
                 // Image.file(
                 // File(받아온 가게 이미지),
                 // fit: BoxFit.cover,
-                // ),
+                //),
               ),
               Container(
                 decoration: BoxDecoration(
-                    border: Border(
-                        bottom: BorderSide(
-                          width: 10.0,
-                          color: Colors.grey.withOpacity(0.1),
-                        )
+                  border: Border(
+                    bottom: BorderSide(
+                      width: 10.0,
+                      color: Colors.grey.withOpacity(0.1),
                     )
+                  )
                 ),
                 child: Padding(
                     padding: const EdgeInsets.all(16.0),
@@ -148,7 +166,7 @@ class _StorePageState extends State<StorePage> {
                               ),
                               // 가게 로고 이미지를 넣으세요.
                               child: Image.asset(
-                                  'asset/img/logo.png'
+                                'asset/img/logo.png'
                               )
                               // Image.file(
                               // File(가게 로고),
@@ -174,16 +192,146 @@ class _StorePageState extends State<StorePage> {
                     )
                 ),
               ),
-
-
+              Column(
+                children: [
+                  Row(
+                    children: [
+                      Stack(
+                        children: [
+                          if (selectedImagePath != null)
+                            Container(
+                              height: 70,
+                              width: 100,
+                              child: Image.file(
+                                File(selectedImagePath!),
+                              ),
+                            ),
+                          if (selectedImagePath != null)
+                            Positioned(
+                              top: 0,
+                              right: 0,
+                              child: GestureDetector(
+                                onTap: () {
+                                  // 이미지 초기화 로직
+                                  setState(() {
+                                    selectedImagePath = null;
+                                  });
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.all(4),
+                                  color: Colors.red,
+                                  child: Icon(
+                                    Icons.close,
+                                    color: Colors.white,
+                                    size: 16,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                      SizedBox(width: 20),
+                      if (selectedImagePath == null)
+                        ElevatedButton(
+                          onPressed: () {
+                            _pickImageFromGallery();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: Size(40, 100), // 버튼의 최소 너비를 설정
+                            primary: Color(0xff4876F2), // 버튼의 배경색을 회색으로 설정
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                          ),
+                          child: Text('상품 이미지'),
+                        ),
+                      SizedBox(width: 20),
+                      // 상품 정보 입력 필드
+                      Column(
+                        children: [
+                          Container(
+                            width: 250,
+                            child: TextField(
+                              controller: nameController,
+                              decoration: InputDecoration(labelText: '상품 이름'),
+                            ),
+                          ),
+                          Container(
+                            width: 250,
+                            child: TextField(
+                              controller: priceController,
+                              decoration: InputDecoration(labelText: '상품 가격'),
+                            ),
+                          ),
+                          Container(
+                            width: 250,
+                            child: TextField(
+                              controller: descriptionController,
+                              decoration: InputDecoration(labelText: '상품 설명'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              // 완료 버튼
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    // 새 상품을 목록에 추가
+                    products.add(Product(
+                      name: nameController.text,
+                      price: priceController.text,
+                      description: descriptionController.text,
+                      imageUrl: selectedImagePath ?? '',
+                    ));
+                    // 입력 필드 초기화
+                    nameController.clear();
+                    priceController.clear();
+                    descriptionController.clear();
+                    // 이미지 초기화
+                    selectedImagePath = null;
+                  });
+                  _itemRegist(nameController.text, priceController.text,
+                    descriptionController.text, selectedImagePath!, widget.shopNumber);
+                },
+                style: ElevatedButton.styleFrom(
+                  primary: Color(0xff4876F2), // 버튼의 배경색을 회색으로 설정
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                ),
+                child: Text('상품 추가'),
+              ),
+              // 로그인 버튼
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              LoginPage(widget.shopNumber, widget.userroll)
+                      )
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  primary: Color(0xff4876F2), // 버튼의 배경색을 회색으로 설정
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                ),
+                child: Text('로그인 하기'),
+              ),
               // 상품 목록 표시
               Container(
                 height: 300,
                 child: ListView.builder(
                   shrinkWrap: true,
-                  itemCount: products_test.length,
+                  itemCount: products.length,
                   itemBuilder: (context, index) {
-                    final product = products_test[index];
+                    final product = products[index];
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Container(
@@ -192,18 +340,14 @@ class _StorePageState extends State<StorePage> {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            if (product['itemImg']!.isNotEmpty)
+                            if (product.imageUrl!.isNotEmpty)
                               Container(
                                 height: 70,
                                 width: 100,
-                                child: Image.asset( // 임시
-                                  product['itemImg']!,
+                                child: Image.file(
+                                  File(product.imageUrl!),
                                   fit: BoxFit.cover,
                                 ),
-                                // Image.file(
-                                // File(product['itemImg']!),
-                                // fit: BoxFit.cover,
-                                // ),
                               ),
                             SizedBox(width: 10),
                             Column(
@@ -211,14 +355,14 @@ class _StorePageState extends State<StorePage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  product['itemName']!,
+                                  product.name,
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                Text('가격: ${product['itemPrice']}원'),
-                                Text(product['itemInfo']!),
+                                Text('가격: ${product.price}원'),
+                                Text(product.description),
                               ],
                             )
                           ],
@@ -303,6 +447,40 @@ class _StorePageState extends State<StorePage> {
         ),
       ),
     );
+  }
+
+  // 상품 등록
+  void _itemRegist(String name, String price, String info, String img, String shopNum) async {
+    String url = 'http://10.0.2.2:3000/item/registItem';
+
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+    };
+
+    Map<String, String> body = {
+      'itemName': name,
+      'itemPrice': price,
+      'itemInfo': info,
+      'itemImg': img,
+      'shopNum': shopNum,
+    };
+
+    try {
+      http.Response response = await http.post(Uri.parse(url),
+          headers: headers, body: json.encode(body));
+
+      if (response.statusCode == 200) {
+        print('respone : ${response.body}');
+        _showDialog('성공', '아이템 등록 성공');
+      } else {
+        // 기타 오류
+        print('가게 데이터 불러오기 오류 ${response.statusCode}');
+        _showDialog('오류', '가게 데이터 불러오기 오류');
+      }
+    } catch (e) {
+      print("response : ${e}");
+      _showDialog('오류', '서버와 통신 중에 오류가 발생했습니다.');
+    }
   }
 
   // 가게 데이터 불러오기

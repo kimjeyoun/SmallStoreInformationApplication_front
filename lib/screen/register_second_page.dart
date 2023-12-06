@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:where_shop_project/screen/business_registration_num_verify_page.dart';
+import 'package:where_shop_project/screen/login_page.dart';
 
 class SecondRegisterForm extends StatefulWidget {
   final String id;
@@ -536,11 +537,17 @@ class _SecondRegisterFormState extends State<SecondRegisterForm> {
               context,
               MaterialPageRoute(
                   builder: (context) =>
-                      BusinessRegistrationNumVerifyPage(id)
+                      BusinessRegistrationNumVerifyPage(id, widget.userroll)
               )
           );
         } else {
-          Navigator.pushNamed(context, '/login');
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      LoginPage('', widget.userroll)
+              )
+          );
         }
       } else {
         // 기타 오류

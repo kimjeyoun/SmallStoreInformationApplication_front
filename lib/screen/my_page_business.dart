@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:where_shop_project/screen/store_add_item_page.dart';
 import 'dart:convert';
+import 'package:where_shop_project/screen/store_add_item_page.dart';
 
 class MyPageBusiness extends StatefulWidget {
+  final String shopNum;
+
+  const MyPageBusiness(this.shopNum);
+
   @override
   _MyPageBusinessState createState() => _MyPageBusinessState();
 }
@@ -173,7 +179,13 @@ class _MyPageBusinessState extends State<MyPageBusiness> {
                         ),
                         TextButton(
                           onPressed: () {
-                            Navigator.pushNamed(context, '/storedetale');
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        StoreAddItemPage(widget.shopNum, 'SHOPOWNER')
+                                )
+                            );
                           },
                           style: TextButton.styleFrom(
                             minimumSize: Size.zero,
