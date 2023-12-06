@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:where_shop_project/screen/login_page.dart';
@@ -11,9 +12,11 @@ import 'package:where_shop_project/screen/pw_find_first_page.dart';
 import 'package:where_shop_project/screen/my_page_business.dart';
 import 'package:where_shop_project/screen/store_add_item_page.dart';
 
-void main() {
-  AuthRepository.initialize(appKey: 'fa4f3ec1c61f1d480b71d4d0c2ce927b');
-  KakaoSdk.init(nativeAppKey: 'a91268cc8e8aa84cc31131d407c3076a');
+void main() async{
+  await dotenv.load(fileName: ".env");
+  WidgetsFlutterBinding.ensureInitialized();
+  AuthRepository.initialize(appKey: dotenv.get('Api_Key'));
+  KakaoSdk.init(nativeAppKey: dotenv.get('Native_Key'));
   runApp(MyApp());
 }
 

@@ -1,63 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 import 'package:where_shop_project/screen/store_page.dart';
 
 class HomeDiv extends StatefulWidget {
+  final List resList;
+
+  HomeDiv({super.key, required this.resList});
   @override
-  _HomeDivState createState() => _HomeDivState();
+  State<HomeDiv> createState() => _HomeDivState();
 }
 
 class _HomeDivState extends State<HomeDiv> {
   PageController _eventViewController = PageController(initialPage: 0);
   int _currentPage = 0;
-  late List<bool> isLikedList;
-
-  final List<Map<String, String>> shopData = [
-    {
-      'storeImg': 'url',
-      'storeName': '프루터프룻',
-      'storeAddress': '경기도 군포시',
-      'storeInfo': '맛있는 과일 가게',
-    },
-    {
-      'storeImg': 'url',
-      'storeName': '라멘 가게',
-      'storeAddress': '경기도 광명시',
-      'storeInfo': '맛있는 라멘 가게',
-    },
-    {
-      'storeImg': 'url',
-      'storeName': '철물점 철물',
-      'storeAddress': '경기도 안양시',
-      'storeInfo': '제일가는 철물점',
-    },
-    {
-      'storeImg': 'url',
-      'storeName': '하나만 팔아',
-      'storeAddress': '경기도 구리시',
-      'storeInfo': '진짜 하나만 팜',
-    },
-    // Add more shop data as needed
-  ];
-
-  String address = '경기도 군포시'; // 임시
-  late http.Response shopData2;
-
-  void fetchAndDisplayShopData() async {
-    shopData2 = await _showShop(address);
-  }
-
-  void updateIsLikedList() {
-    isLikedList = List.generate(shopData.length, (index) => false);
-  }
+  List shopData = [];
+  List<bool> isLikedList = [];
 
   @override
   void initState() {
     super.initState();
-    fetchAndDisplayShopData();
-    updateIsLikedList();
+    shopData = widget.resList;
+    isLikedList = List.generate(shopData.length, (index) => false);
   }
 
   void _showDialog(String title, String message) {
@@ -188,6 +151,83 @@ class _HomeDivState extends State<HomeDiv> {
      );
   }
 
+  Widget buildShopContainer(Map<String, dynamic> shop, bool isLiked, VoidCallback onPressed) {
+    return Container(
+      width: 160,
+      height: 180.0,
+      margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10.0),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Color(0xFFCFDAF6),
+            offset: Offset(6, 6),
+            blurRadius: 6.0,
+            spreadRadius: 1.0,
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          vertical: 10,
+          horizontal: 10,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 140,
+              height: 90,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8.0),
+                image: DecorationImage(
+                  image: AssetImage('asset/img/test_img.jpg'),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  shop['shopName'] ?? '',
+                  style: TextStyle(
+                    fontSize: 12.0,
+                    color: Color(0xFF7C869F),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(
+                    isLiked ? Icons.favorite : Icons.favorite_border,
+                    color: isLiked ? Colors.red : null,
+                  ),
+                  iconSize: 20,
+                  padding: EdgeInsets.zero,
+                  constraints: BoxConstraints(),
+                  onPressed: onPressed,
+                ),
+              ],
+            ),
+            Text(
+              shop['shopAddress'] ?? '',
+              style: TextStyle(
+                fontSize: 6.2,
+                color: Colors.grey,
+              ),
+            ),
+            SizedBox(height: 3),
+            Text(
+              shop['storeInfo'] ?? '',
+              style: TextStyle(
+                fontSize: 10,
+                color: Color(0xFF7C869F),
+                fontWeight: FontWeight.w600,
+              ),
+            )
+          ],
   Widget buildShopContainer(Map<String, String> shop, bool isLiked, VoidCallback onPressed) {
     return GestureDetector(
       onTap: () {
@@ -276,33 +316,5 @@ class _HomeDivState extends State<HomeDiv> {
         ),
       ),
     );
-  }
-
-  // 가게 데이터 불러오기
-  Future<http.Response> _showShop(String address) async {
-    String url = 'http://10.0.2.2:3000/shop/showShop';
-
-    Map<String, String> headers = {
-      'Content-Type': 'application/json',
-      'address': address,
-    };
-
-    try {
-      http.Response response = await http.get(Uri.parse(url), headers: headers);
-
-      if (response.statusCode == 200) {
-        print('respone : ${response.body}');
-        return response;
-      } else {
-        // 기타 오류
-        print('가게 데이터 불러오기 오류 ${response.statusCode}');
-        _showDialog('오류', '가게 데이터 불러오기 오류');
-        return Future.error('가게 데이터 불러오기 오류');
-      }
-    } catch (e) {
-      print("response : ${e}");
-      _showDialog('오류', '서버와 통신 중에 오류가 발생했습니다.');
-      return Future.error('서버와 통신 중에 오류가 발생했습니다.');
-    }
   }
 }

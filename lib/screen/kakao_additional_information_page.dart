@@ -3,12 +3,12 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class KakaoAdditionalInfomationPage extends StatefulWidget {
-  final String id;
-  final String password;
+  final String email;
+  final String nickname;
   final accessToken;
   final String userroll;
 
-  const KakaoAdditionalInfomationPage(this.id, this.password, this.accessToken, this.userroll);
+  const KakaoAdditionalInfomationPage(this.email, this.nickname, this.accessToken, this.userroll);
 
   @override
   _KakaoAdditionalInfomationPageState createState() => _KakaoAdditionalInfomationPageState();
@@ -29,12 +29,6 @@ class _KakaoAdditionalInfomationPageState extends State<KakaoAdditionalInfomatio
   @override
   void initState() {
     super.initState();
-    _nicknameFocusNode.addListener(() {
-      setState(() {
-        _showLabel_nickname =
-        !_nicknameFocusNode.hasFocus; // 포커스가 없을 때에만 _showLabel을 true로 설정
-      });
-    });
     _addressFocusNode.addListener(() {
       setState(() {
         _showLabel_address = !_addressFocusNode.hasFocus;
@@ -55,7 +49,6 @@ class _KakaoAdditionalInfomationPageState extends State<KakaoAdditionalInfomatio
   }
 
   // 컨트롤러
-  TextEditingController _nicknameController = TextEditingController();
   TextEditingController _addressController = TextEditingController();
   TextEditingController _detailAddressController = TextEditingController();
 
@@ -117,47 +110,6 @@ class _KakaoAdditionalInfomationPageState extends State<KakaoAdditionalInfomatio
 
                             SizedBox(height: 25),
 
-                            // nickname TextField
-                            TextField(
-                              focusNode: _nicknameFocusNode,
-                              controller: _nicknameController,
-                              onTap: () {
-                                setState(() {
-                                  _showLabel_nickname = false;
-                                });
-                              },
-                              style: TextStyle(fontSize: 18),
-                              decoration: InputDecoration(
-                                labelText:
-                                _showLabel_nickname ? '닉네임' : null,
-                                labelStyle: TextStyle(
-                                  fontFamily: 'Sandoll',
-                                  fontSize: 13,
-                                  color: Colors.grey.withOpacity(0.5),
-                                  fontWeight: FontWeight.w600,
-                                ),
-                                filled: true,
-                                // 배경 색상을 사용하도록 설정
-                                fillColor: Colors.white,
-                                // 배경 색상 설정
-                                contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 13.2,
-                                ),
-                                isDense: true,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(5.0),
-                                  borderSide: BorderSide.none,
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Colors.white,
-                                    )
-                                ),
-                              ),
-                            ),
-
-                            SizedBox(height: 50),
                             // address TextField
                             TextField(
                               focusNode: _addressFocusNode,
@@ -272,22 +224,17 @@ class _KakaoAdditionalInfomationPageState extends State<KakaoAdditionalInfomatio
 
                             ElevatedButton(
                               onPressed: () {
-                                String nickname = _nicknameController.text;
                                 String address = _addressController.text + _detailAddressController.text;
 
-                                if (!_nicknameController.text.isEmpty
-                                    && !_addressController.text.isEmpty
+                                if (!_addressController.text.isEmpty
                                     && !_detailAddressController.text.isEmpty) {
                                   _kakao_register(
-                                      widget.id,
-                                      widget.password,
-                                      nickname,
+                                      widget.email,
+                                      widget.nickname,
                                       address,
                                       widget.userroll,
                                       widget.accessToken,
                                   );
-                                } else if (_nicknameController.text.isEmpty) {
-                                  _showDialog('오류', '닉네임을 입력해주세요.');
                                 } else if (_addressController.text.isEmpty) {
                                   _showDialog('오류', '주소를 입력해주세요.');
                                 } else
@@ -321,8 +268,7 @@ class _KakaoAdditionalInfomationPageState extends State<KakaoAdditionalInfomatio
     );
   }
 
-  void _kakao_register(String id, String password,String nickname, String address
-      , String userroll, final accessToken) async {
+  void _kakao_register(String email, String nickname, String address, String userroll, final accessToken) async {
     String url = 'http://10.0.2.2:3000/users/signup';
 
 
@@ -332,13 +278,10 @@ class _KakaoAdditionalInfomationPageState extends State<KakaoAdditionalInfomatio
 
     Map<String, dynamic> body = {
       'address': address,
-      'id': id,
+      'id': email,
       'loginType': 'kakaoLogin',
       'nickname': nickname,
-      'password': password,
       "userRole": userroll,
-      'accessToken': accessToken,
-      "verifyRole": "VERIFYFALSE",
     };
 
 
@@ -352,7 +295,7 @@ class _KakaoAdditionalInfomationPageState extends State<KakaoAdditionalInfomatio
         Navigator.pushNamed(context, 'main');
       } else {
         // 기타 오류
-        print('넘어온 정보: ${id}, ${password}, ${accessToken}, ${userroll}');
+        print('넘어온 정보: ${email}, ${nickname}, ${accessToken}, ${userroll}');
         print('회원가입 오류 ${response.statusCode}');
         print('body: $body');
         _showDialog('오류', '회원가입 중에 오류가 발생했습니다.');

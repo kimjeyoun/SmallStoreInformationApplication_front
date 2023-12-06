@@ -477,7 +477,7 @@ class _SecondRegisterFormState extends State<SecondRegisterForm> {
 
     Map<String, String> body = {
       'phone': phoneNum,
-      'randomcode' : randomCode,
+      'randomCode' : randomCode,
       'type' : type,
       'user_id' : id,
     };

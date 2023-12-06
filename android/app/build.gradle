@@ -21,6 +21,11 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
+def KAKAO_API_KEY = localProperties.getProperty('Native_Key')
+if (KAKAO_API_KEY == null) {
+    throw new Exception('Please add kakao api key in local.properties (e.g KAKAO_API_KEY=your_key)')
+}
+
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
@@ -52,6 +57,9 @@ android {
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+
+        // apply api key to AndroidManifest.xml
+        manifestPlaceholders["Native_Key"] = KAKAO_API_KEY
     }
 
     buildTypes {

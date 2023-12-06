@@ -335,7 +335,7 @@ class _AdditionalBusinessInfoPageState extends State<AdditionalBusinessInfoPage>
                             // next btn
                             ElevatedButton(
                               onPressed: () {
-                                String categortNum = selectedCategory;
+                                String categortNum = selectedCategory.split(" ")[0];
                                 String id = widget.id;
                                 String shopAddress = widget.businesLocation;
                                 String? shopLogo = _logoImage?.path;
