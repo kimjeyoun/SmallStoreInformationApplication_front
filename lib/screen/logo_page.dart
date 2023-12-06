@@ -32,44 +32,16 @@ class _LogoPageState extends State<LogoPage> {
     );
   }
 
-  void _register_kakao(String id, String password, final accessToken, String userroll) async {
-    String url = 'http://10.0.2.2:3000/users/signup';
-
-
-    Map<String, String> headers = {
-      'Content-Type': 'application/json',
-    };
-
-    Map<String, dynamic> body = {
-      'id': id,
-      'loginType': 'kakaoLogin',
-      'password': password,
-      "userRole": userroll,
-      "verifyRole": "VERIFYFALSE",
-    };
-
-
-
+  void _register_kakao(String email, String nickname, final accessToken, String userroll) async {
     try {
-      http.Response response = await http.post(Uri.parse(url),
-          headers: headers, body: json.encode(body));
-
-      if (response.statusCode == 200) {
-        // 회원가입 성공 시 처리할 로직 추가
-        print('카카오 회원가입 성공');
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    KakaoAdditionalInfomationPage(id, password, accessToken, userroll)
-            )
-        );
-      } else {
-        // 기타 오류
-        print('카카오 회원가입 오류 ${response.statusCode}');
-        print('body: $body');
-        _showDialog('오류', '카카오 회원가입 중에 오류가 발생했습니다.');
-      }
+      print('카카오 회원가입 성공');
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  KakaoAdditionalInfomationPage(email, nickname, accessToken, userroll)
+          )
+      );
     } catch (e) {
       print("response : ${e}");
       _showDialog('오류', '서버와 통신 중에 오류가 발생했습니다.');
@@ -140,14 +112,13 @@ class _LogoPageState extends State<LogoPage> {
     try {
       User user = await UserApi.instance.me();
       print('사용지 정보 요청 성공'
-          '\n회원번호: ${user.id}'
           '\n닉네임: ${user.kakaoAccount?.profile?.nickname}'
-          '\n닉네임: ${user.kakaoAccount?.email}'
+          '\n이메일: ${user.kakaoAccount?.email}'
           '\n모든 정보: ${user.kakaoAccount}'
       );
-      String id = user.id.toString();
-      String pw = 'kakaoLogin1234';
-      _register_kakao(id, pw, accessToken, 'USER');
+      String? email = user.kakaoAccount?.email.toString();
+      String? nickname = user.kakaoAccount?.profile?.nickname.toString();
+      _register_kakao(email!, nickname!, accessToken, 'USER');
     } catch (error) {
       print('사용자 정보 요청 실패 $error');
     }

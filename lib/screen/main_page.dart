@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:where_shop_project/screen/home_div.dart';
@@ -25,12 +26,17 @@ class _MainPageState extends State<MainPage> {
   bool isDrawerOpen = false;
 
 
-  late final Object responrStore;
+  List<dynamic> resStore = [];
+
+  void getData() async{
+    resStore = await _showShop("경기도 군포시");
+  }
 
 
   @override
-  void initState() {
+  void initState(){
     super.initState();
+    getData();
   }
 
   @override
@@ -137,10 +143,11 @@ class _MainPageState extends State<MainPage> {
                                   ? IconButton(
                                 onPressed: () {
                                   String keyword = _searchController.text;
-                                  setState(() {
+                                  setState(() async{
                                     _searchController.clear();
                                     _showClearButton = false;
-                                    responrStore = _searchShop(keyword);
+                                    resStore = [];
+                                    resStore = await _searchShop(keyword);
                                   });
                                 },
                                 color: Color(0xff4876F2),
@@ -377,7 +384,7 @@ class _MainPageState extends State<MainPage> {
               children: [
                 // 네비게이터 바 아래에 표시할 내용 추가
                 if (_selectedIndex == 0)
-                  HomeDiv(),
+                  HomeDiv(resList: resStore),
                 if (_selectedIndex == 1)
                   Center(
                     child: Text('알뜰샵 페이지 내용'),
@@ -469,31 +476,71 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  // 가게 검색
-  Future<http.Response> _searchShop(String keyword) async {
-    String url = 'http://10.0.2.2:3000/shop/searchShop';
+  // 가게 데이터 불러오기
+  Future<List> _showShop(String address) async {
+    String url = 'http://10.0.2.2:3000/shop/showShop?address=$address';
+    final storage = FlutterSecureStorage();
+    String? refreshToken = await storage.read(key: 'refreshToken');
+    String? accessToken = await storage.read(key: 'accessToken');
 
     Map<String, String> headers = {
       'Content-Type': 'application/json',
-      'keyword': keyword,
+      'Authorization': 'bearer $accessToken',
+      'refreshToken': 'bearer $refreshToken',
     };
 
     try {
       http.Response response = await http.get(Uri.parse(url), headers: headers);
+      Map res = jsonDecode(utf8.decode(response.bodyBytes));
 
       if (response.statusCode == 200) {
-        print('respone : ${response.body}');
-        return response;
+        print('respone : ${res['data']}');
+        return res['data'];
       } else {
         // 기타 오류
-        print('가게 검색 오류 ${response.statusCode}');
-        _showDialog('오류', '가게 검색중 오류가 발생했습니다.');
-        return Future.error('가게 검색중 오류가 발생했습니다.');
+        print('가게 데이터 불러오기 오류 ${response.statusCode}');
+        _showDialog('오류', '가게 데이터 불러오기 오류');
+        return [];
       }
     } catch (e) {
       print("response : ${e}");
       _showDialog('오류', '서버와 통신 중에 오류가 발생했습니다.');
-      return Future.error('서버와 통신 중에 오류가 발생했습니다.');
+      return [];
+    }
+  }
+
+  // 가게 검색
+  Future<List> _searchShop(String keyword) async {
+    String url = 'http://10.0.2.2:3000/shop/searchShop?keyword=$keyword';
+    final storage = FlutterSecureStorage();
+    String? refreshToken = await storage.read(key: 'refreshToken');
+    String? accessToken = await storage.read(key: 'accessToken');
+
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'bearer $accessToken',
+      'refreshToken': 'bearer $refreshToken',
+    };
+
+    try {
+      http.Response response = await http.get(Uri.parse(url), headers: headers);
+      List res = jsonDecode(utf8.decode(response.bodyBytes));
+
+      if (response.statusCode == 200) {
+        return res;
+      } else if(response.statusCode == 400){
+        _showDialog("검색 완료", response.body);
+        return [];
+      } else {
+        // 기타 오류
+        print('가게 검색 오류 ${response.statusCode}');
+        _showDialog('오류', '가게 검색중 오류가 발생했습니다.');
+        return [];
+      }
+    } catch (e) {
+      print("response : ${e}");
+      _showDialog('오류', '서버와 통신 중에 오류가 발생했습니다.');
+      return [];
     }
   }
 }
