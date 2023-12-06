@@ -2,26 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:where_shop_project/screen/main_page.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
+  final String shopNum;
+  final String userroll;
+
+  const LoginPage(this.shopNum, this.userroll);
+
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color(0xFF4876F2),
-      body: Padding(
-        padding: EdgeInsets.all(20.0),
-        child: LoginForm(),
-      ),
-    );
-  }
+  _LoginPageState createState() => _LoginPageState();
 }
 
-class LoginForm extends StatefulWidget {
-  @override
-  _LoginFormState createState() => _LoginFormState();
-}
-
-class _LoginFormState extends State<LoginForm> {
+class _LoginPageState extends State<LoginPage> {
   TextEditingController _idController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   static final storage = FlutterSecureStorage();
@@ -57,185 +50,194 @@ class _LoginFormState extends State<LoginForm> {
       },
       child: Scaffold(
         backgroundColor: Color(0xFF4876F2),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(height: 60),
-              Image.asset(
-                'asset/img/wordmark_white.png',
-                width: 90,
-              ),
-              SizedBox(height: 100),
-              Text(
-                '이미 회원이신가요?',
-                style: TextStyle(
-                  fontFamily: 'Sandoll',
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                  fontSize: 20,
+        body: Padding(
+          padding: EdgeInsets.all(20),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(height: 60),
+                Image.asset(
+                  'asset/img/wordmark_white.png',
+                  width: 90,
                 ),
-              ),
-              SizedBox(height: 60),
-              Align(
-                alignment: Alignment.center,
-                child: SizedBox(
+                SizedBox(height: 100),
+                Text(
+                  '이미 회원이신가요?',
+                  style: TextStyle(
+                    fontFamily: 'Sandoll',
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                    fontSize: 20,
+                  ),
+                ),
+                SizedBox(height: 60),
+                Align(
+                  alignment: Alignment.center,
+                  child: SizedBox(
+                    width: 300, // 원하는 너비로 설정
+                    child: TextField(
+                      controller: _idController,
+                      decoration: InputDecoration(
+                        labelText: '아이디 또는 이메일',
+                        labelStyle: TextStyle(
+                          fontFamily: 'Sandoll',
+                          fontSize: 13, // 원하는 폰트 크기로 조정
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFFB8B8B8), // 원하는 색상으로 조정
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(4.0),
+                          borderSide: BorderSide.none,
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 15),
+                Align(
+                  alignment: Alignment.center,
+                  child: SizedBox(
+                    width: 300, // 원하는 너비로 설정
+                    child: TextField(
+                      controller: _passwordController,
+                      decoration: InputDecoration(
+                        labelText: '비밀번호',
+                        labelStyle: TextStyle(
+                          fontFamily: 'Sandoll',
+                          fontSize: 13, // 원하는 폰트 크기로 조정
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFFB8B8B8), // 원하는 색상으로 조정
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(4.0),
+                          borderSide: BorderSide.none,
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                      ),
+                      obscureText: true,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20),
+                SizedBox(
                   width: 300, // 원하는 너비로 설정
-                  child: TextField(
-                    controller: _idController,
-                    decoration: InputDecoration(
-                      labelText: '아이디 또는 이메일',
-                      labelStyle: TextStyle(
-                        fontFamily: 'Sandoll',
-                        fontSize: 13, // 원하는 폰트 크기로 조정
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFFB8B8B8), // 원하는 색상으로 조정
+                  child: ElevatedButton(
+                    onPressed: () {
+                      String username = _idController.text;
+                      String password = _passwordController.text;
+                      _login(username, password, context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: Size(double.infinity, 48), // 버튼의 최소 너비를 설정
+                      primary: Color(0xFF143386), // 버튼의 배경색을 회색으로 설정
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
                       ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(4.0),
-                        borderSide: BorderSide.none,
-                      ),
-                      filled: true,
-                      fillColor: Colors.white,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                     ),
-                  ),
-                ),
-              ),
-              SizedBox(height: 15),
-              Align(
-                alignment: Alignment.center,
-                child: SizedBox(
-                  width: 300, // 원하는 너비로 설정
-                  child: TextField(
-                    controller: _passwordController,
-                    decoration: InputDecoration(
-                      labelText: '비밀번호',
-                      labelStyle: TextStyle(
-                        fontFamily: 'Sandoll',
-                        fontSize: 13, // 원하는 폰트 크기로 조정
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFFB8B8B8), // 원하는 색상으로 조정
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(4.0),
-                        borderSide: BorderSide.none,
-                      ),
-                      filled: true,
-                      fillColor: Colors.white,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-                    ),
-                    obscureText: true,
-                  ),
-                ),
-              ),
-              SizedBox(height: 20),
-              SizedBox(
-                width: 300, // 원하는 너비로 설정
-                child: ElevatedButton(
-                  onPressed: () {
-                    String username = _idController.text;
-                    String password = _passwordController.text;
-                    _login(username, password, context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: Size(double.infinity, 48), // 버튼의 최소 너비를 설정
-                    primary: Color(0xFF143386), // 버튼의 배경색을 회색으로 설정
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                  ),
-                  child: Text('로그인', style: TextStyle(
+                    child: Text('로그인', style: TextStyle(
                       fontFamily: 'Sandoll',
                       fontWeight: FontWeight.w600,
                       fontSize: 13,
                       color: Colors.white,
                     ),
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(height: 10),
-              TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/selection');
-                },
-                style: TextButton.styleFrom(
-                  minimumSize: Size.zero,
-                  padding: EdgeInsets.zero,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  alignment: Alignment.center,
-                ),
-                child: Opacity(
-                  opacity: 0.8,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border(
-                          bottom: BorderSide(color: Colors.white)
+                SizedBox(height: 10),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/selection');
+                  },
+                  style: TextButton.styleFrom(
+                    minimumSize: Size.zero,
+                    padding: EdgeInsets.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    alignment: Alignment.center,
+                  ),
+                  child: Opacity(
+                    opacity: 0.8,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border(
+                            bottom: BorderSide(color: Colors.white)
+                        ),
                       ),
-                    ),
-                    child: Opacity(
-                      opacity: 0.8,
-                      child: Text(
-                        '쉽고 빠른 회원가입',
-                        style: TextStyle(
-                          fontFamily: 'Sandoll',
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
+                      child: Opacity(
+                        opacity: 0.8,
+                        child: Text(
+                          '쉽고 빠른 회원가입',
+                          style: TextStyle(
+                            fontFamily: 'Sandoll',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              SizedBox(height: 10),
-              TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/pwfindfirst');
-                },
-                style: TextButton.styleFrom(
-                  minimumSize: Size.zero,
-                  padding: EdgeInsets.zero,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  alignment: Alignment.center,
-                ),
-                child: Opacity(
-                  opacity: 0.8,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border(
-                          bottom: BorderSide(color: Colors.white)
+                SizedBox(height: 10),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/pwfindfirst');
+                  },
+                  style: TextButton.styleFrom(
+                    minimumSize: Size.zero,
+                    padding: EdgeInsets.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    alignment: Alignment.center,
+                  ),
+                  child: Opacity(
+                    opacity: 0.8,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border(
+                            bottom: BorderSide(color: Colors.white)
+                        ),
                       ),
-                    ),
-                    child: Opacity(
-                      opacity: 0.8,
-                      child: Text(
-                        '비밀번호를 잊으셨나요?',
-                        style: TextStyle(
-                          fontFamily: 'Sandoll',
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
+                      child: Opacity(
+                        opacity: 0.8,
+                        child: Text(
+                          '비밀번호를 잊으셨나요?',
+                          style: TextStyle(
+                            fontFamily: 'Sandoll',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/main');
-                },
-                child: Text('main'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/mypagebn');
-                },
-                child: Text('mypagebn'),
-              ),
-            ],
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                MainPage(widget.userroll, widget.shopNum)
+                        )
+                    );
+                  },
+                  child: Text('main'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/mypagebn');
+                  },
+                  child: Text('mypagebn'),
+                ),
+              ],
+            ),
           ),
-        ),
+        )
       ),
     );
   }
@@ -273,7 +275,13 @@ class _LoginFormState extends State<LoginForm> {
         _showDialog('로그인 성공', '환영합니다!');
         // 로그인 성공 시 처리할 로직 추가
         // 예: 홈 페이지로 이동 또는 다른 작업 수행
-        Navigator.pushNamed(context, '/main');
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    MainPage(widget.userroll, widget.shopNum)
+            )
+        );
       } else {
         // 기타 오류
         print("로그인 실패1 ${response.statusCode}");

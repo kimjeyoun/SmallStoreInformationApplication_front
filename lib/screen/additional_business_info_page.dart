@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:where_shop_project/screen/store_add_item_page.dart';
 
 class AdditionalBusinessInfoPage extends StatefulWidget {
   final String id;
@@ -11,10 +12,11 @@ class AdditionalBusinessInfoPage extends StatefulWidget {
   final String businessName;
   final String businesLocation;
   final String businessPhoneNum;
+  final String userroll;
 
   const AdditionalBusinessInfoPage(
       this.id, this.businessNum, this.businessName,
-      this.businesLocation, this.businessPhoneNum
+      this.businesLocation, this.businessPhoneNum, this.userroll
       );
 
   @override
@@ -344,6 +346,13 @@ class _AdditionalBusinessInfoPageState extends State<AdditionalBusinessInfoPage>
                                 _storeRegistration(
                                   categortNum, id, shopAddress, shopLogo,
                                   shopName, shopNumber, shopPhoneNumber, shopPicture
+                                );
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            StoreAddItemPage(shopNumber, widget.userroll)
+                                    )
                                 );
                               },
                               style: ElevatedButton.styleFrom(

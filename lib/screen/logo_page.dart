@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:where_shop_project/screen/kakao_additional_information_page.dart';
+import 'package:where_shop_project/screen/login_page.dart';
 
 class LogoPage extends StatefulWidget {
   @override
@@ -265,7 +266,14 @@ class _LogoPageState extends State<LogoPage> {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/login');
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            // LoginPage('123456', 'SHOPOWNER')
+                            LoginPage('123456', 'USER')
+                    )
+                );
               },
               style: ElevatedButton.styleFrom(
                 primary: Color(0xFF4876F2),

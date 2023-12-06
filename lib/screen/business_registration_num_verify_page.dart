@@ -5,8 +5,9 @@ import 'package:where_shop_project/screen/additional_business_info_page.dart';
 
 class BusinessRegistrationNumVerifyPage extends StatefulWidget {
   final String id;
+  final String userroll;
 
-  const BusinessRegistrationNumVerifyPage(this.id);
+  const BusinessRegistrationNumVerifyPage(this.id, this.userroll);
 
   @override
   _BusinessRegistrationNumVerifyPageState createState() => _BusinessRegistrationNumVerifyPageState();
@@ -383,7 +384,7 @@ class _BusinessRegistrationNumVerifyPageState extends State<BusinessRegistration
                                           builder: (context) =>
                                               AdditionalBusinessInfoPage(
                                                   widget.id, businessNum, businessName,
-                                                  businessLocation, businessPhoneNum
+                                                  businessLocation, businessPhoneNum, widget.userroll,
                                               )
                                       )
                                   );
