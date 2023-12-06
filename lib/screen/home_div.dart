@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-
-import 'package:where_shop_project/screen/store_page.dart';
 
 import 'package:where_shop_project/screen/store_page.dart';
 
@@ -153,30 +150,6 @@ class _HomeDivState extends State<HomeDiv> {
        ],
      );
   }
-
-  Widget buildShopContainer(Map<String, dynamic> shop, bool isLiked, VoidCallback onPressed) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => StorePage()),
-        );
-      },
-      child: Container(
-        width: 160,
-        height: 180.0,
-        margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10.0),
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Color(0xFFCFDAF6),
-              offset: Offset(6, 6),
-              blurRadius: 6.0,
-              spreadRadius: 1.0,
-            ),
-          ],
   Widget buildShopContainer(Map<String, String> shop, bool isLiked, VoidCallback onPressed) {
     return GestureDetector(
       onTap: () {
@@ -200,68 +173,6 @@ class _HomeDivState extends State<HomeDiv> {
               spreadRadius: 1.0,
             ),
           ],
-        ),
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-            vertical: 10,
-            horizontal: 10,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 140,
-                height: 90,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8.0),
-                  image: DecorationImage(
-                    image: AssetImage('asset/img/test_img.jpg'),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    shop['storeName'] ?? '',
-                    style: TextStyle(
-                      fontSize: 12.0,
-                      color: Color(0xFF7C869F),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Text(
-                    shop['storeAddress'] ?? '',
-                    style: TextStyle(
-                      fontSize: 6.2,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      isLiked ? Icons.favorite : Icons.favorite_border,
-                      color: isLiked ? Colors.red : null,
-                    ),
-                    iconSize: 20,
-                    padding: EdgeInsets.zero,
-                    constraints: BoxConstraints(),
-                    onPressed: onPressed,
-                  ),
-                ],
-              ),
-              SizedBox(height: 3),
-              Text(
-                shop['storeInfo'] ?? '',
-                style: TextStyle(
-                  fontSize: 10,
-                  color: Color(0xFF7C869F),
-                  fontWeight: FontWeight.w600,
-                ),
-              )
-            ],
-          ),
         ),
         child: Padding(
           padding: EdgeInsets.symmetric(
