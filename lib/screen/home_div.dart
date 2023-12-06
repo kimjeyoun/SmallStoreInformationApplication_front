@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
 
 import 'package:where_shop_project/screen/store_page.dart';
 
@@ -21,6 +25,42 @@ class _HomeDivState extends State<HomeDiv> {
     super.initState();
     shopData = widget.resList;
     isLikedList = List.generate(shopData.length, (index) => false);
+  }
+
+  // 상품 데이터 불러오기
+  Future<List> _showItem(int shopNum) async {
+    String url = 'http://10.0.2.2:3000/item/showList?shopNum=$shopNum';
+    const storage = FlutterSecureStorage();
+    String? refreshToken = await storage.read(key: 'refreshToken');
+    String? accessToken = await storage.read(key: 'accessToken');
+
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'bearer $accessToken',
+      'refreshToken': 'bearer $refreshToken',
+    };
+
+    try {
+      http.Response response = await http.get(Uri.parse(url), headers: headers);
+
+      if (response.statusCode == 200) {
+        List res = jsonDecode(utf8.decode(response.bodyBytes))['data'];
+        print('respone : ${res}');
+        return res;
+      } else if(response.statusCode == 400){
+        print("값이 없음.");
+        return [];
+      } else {
+        // 기타 오류
+        print('상품 데이터 불러오기 오류 ${response.statusCode}');
+        _showDialog('오류', '상품 데이터 불러오기 오류');
+        return Future.error('상품 데이터 불러오기 오류');
+      }
+    } catch (e) {
+      print("response : ${e}");
+      _showDialog('오류', '서버와 통신 중에 오류가 발생했습니다.');
+      return Future.error('서버와 통신 중에 오류가 발생했습니다.');
+    }
   }
 
   void _showDialog(String title, String message) {
@@ -150,12 +190,13 @@ class _HomeDivState extends State<HomeDiv> {
        ],
      );
   }
-  Widget buildShopContainer(Map<String, String> shop, bool isLiked, VoidCallback onPressed) {
+  Widget buildShopContainer(Map<String, dynamic> shop, bool isLiked, VoidCallback onPressed) {
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
+        List itemList = await _showItem(shop['shopNum']);
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => StorePage()),
+          MaterialPageRoute(builder: (context) => StorePage(shopMap: shop, itemList : itemList)),
         );
       },
       child: Container(
@@ -198,18 +239,11 @@ class _HomeDivState extends State<HomeDiv> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    shop['storeName'] ?? '',
+                    shop['shopName'] ?? '',
                     style: TextStyle(
                       fontSize: 12.0,
                       color: Color(0xFF7C869F),
                       fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Text(
-                    shop['storeAddress'] ?? '',
-                    style: TextStyle(
-                      fontSize: 6.2,
-                      color: Colors.grey,
                     ),
                   ),
                   IconButton(
@@ -223,6 +257,13 @@ class _HomeDivState extends State<HomeDiv> {
                     onPressed: onPressed,
                   ),
                 ],
+              ),
+              Text(
+                shop['shopAddress'] ?? '',
+                style: TextStyle(
+                  fontSize: 6.2,
+                  color: Colors.grey,
+                ),
               ),
               SizedBox(height: 3),
               Text(

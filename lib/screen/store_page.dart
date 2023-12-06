@@ -1,13 +1,9 @@
-import 'dart:io';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:where_shop_project/screen/login_page.dart';
 
 class StorePage extends StatefulWidget {
-  const StorePage();
+  final Map<String, dynamic> shopMap;
+  final List itemList;
+  const StorePage({super.key, required this.shopMap, required this.itemList});
 
   @override
   _StorePageState createState() => _StorePageState();
@@ -33,25 +29,12 @@ class _StorePageState extends State<StorePage> {
 
   List<Product> products = [];
 
-  late http.Response shopData; // 가게 데이터
-  late http.Response itemData; // 상품 데이터
-
-  String address = '경기도 군포시'; // 임시 주소
-  String shopNum = '123456'; // 임시 가게 번호
-
-  void fetchAndDisplayShopData() async {
-    shopData = await _showShop(address);
-  }
-
-  void fetchAndDisplayItemData() async {
-    itemData = await _showItem(shopNum);
-  }
+  late Map shopData = widget.shopMap; // 가게 데이터
+  late List itemData = widget.itemList; // 상품 데이터
 
   @override
   void initState() {
     super.initState();
-    fetchAndDisplayShopData();
-    fetchAndDisplayItemData();
   }
 
 
@@ -77,30 +60,6 @@ class _StorePageState extends State<StorePage> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, String>> products_test = [
-      { // 임시 상품 데이터
-        'itemName': '사과',
-        'itemPrice': '1500',
-        'itemInfo': '맛있는 사과',
-        'itemImg': 'asset/img/apple.jpg',
-        'shopNum': '1',
-      },
-      {
-        'itemName': '포도',
-        'itemPrice': '3000',
-        'itemInfo': '맛있는 포도',
-        'itemImg': 'asset/img/grape.jpg',
-        'shopNum': '1',
-      },
-      {
-        'itemName': '바나나',
-        'itemPrice': '2000',
-        'itemInfo': '맛있는 바나나',
-        'itemImg': 'asset/img/banana.jpg',
-        'shopNum': '1',
-      },
-    ];
-
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -159,13 +118,13 @@ class _StorePageState extends State<StorePage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  '가게 이름',
+                                  '${shopData['shopName']}',
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                Text('가게 주소'),
+                                Text('${shopData['shopAddress']}'),
                               ],
                             ),
                           ],
@@ -175,59 +134,68 @@ class _StorePageState extends State<StorePage> {
                 ),
               ),
 
-
+              if(itemData.isEmpty)
+                Container(
+                  height: 300,
+                  alignment: Alignment.center,
+                  child: const Text('상품이 없습니다.',
+                  style: TextStyle(
+                    fontSize: 25,
+                    ),
+                  ),
+                )
+              else
               // 상품 목록 표시
-              Container(
-                height: 300,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: products_test.length,
-                  itemBuilder: (context, index) {
-                    final product = products_test[index];
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        width: 250,
-                        height: 80,
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (product['itemImg']!.isNotEmpty)
-                              Container(
-                                height: 70,
-                                width: 100,
-                                child: Image.asset( // 임시
-                                  product['itemImg']!,
-                                  fit: BoxFit.cover,
-                                ),
-                                // Image.file(
-                                // File(product['itemImg']!),
-                                // fit: BoxFit.cover,
-                                // ),
-                              ),
-                            SizedBox(width: 10),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  product['itemName']!,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
+                Container(
+                  height: 300,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: itemData.length,
+                    itemBuilder: (context, index) {
+                      final product = itemData[index];
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          width: 250,
+                          height: 80,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                                Container(
+                                  height: 70,
+                                  width: 100,
+                                  child: Image.asset( // 임시
+                                    product['itemImg'],
+                                    fit: BoxFit.cover,
                                   ),
+                                  // Image.file(
+                                  // File(product['itemImg']!),
+                                  // fit: BoxFit.cover,
+                                  // ),
                                 ),
-                                Text('가격: ${product['itemPrice']}원'),
-                                Text(product['itemInfo']!),
-                              ],
-                            )
-                          ],
+                              SizedBox(width: 10),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    product['itemName'],
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text('가격: ${product['itemPrice']}원'),
+                                  Text(product['itemInfo']!),
+                                ],
+                              )
+                            ],
+                          ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
-              ),
             ],
           ),
         ),
@@ -305,61 +273,7 @@ class _StorePageState extends State<StorePage> {
     );
   }
 
-  // 가게 데이터 불러오기
-  Future<http.Response> _showShop(String address) async {
-    String url = 'http://10.0.2.2:3000/shop/showShop';
 
-    Map<String, String> headers = {
-      'Content-Type': 'application/json',
-      'address': address,
-    };
-
-    try {
-      http.Response response = await http.get(Uri.parse(url), headers: headers);
-
-      if (response.statusCode == 200) {
-        print('respone : ${response.body}');
-        return response;
-      } else {
-        // 기타 오류
-        print('가게 데이터 불러오기 오류 ${response.statusCode}');
-        _showDialog('오류', '가게 데이터 불러오기 오류');
-        return Future.error('가게 데이터 불러오기 오류');
-      }
-    } catch (e) {
-      print("response : ${e}");
-      _showDialog('오류', '서버와 통신 중에 오류가 발생했습니다.');
-      return Future.error('서버와 통신 중에 오류가 발생했습니다.');
-    }
-  }
-
-  // 상품 데이터 불러오기
-  Future<http.Response> _showItem(String shopNum) async {
-    String url = 'http://10.0.2.2:3000/item/showList';
-
-    Map<String, String> headers = {
-      'Content-Type': 'application/json',
-      'shopNum': shopNum,
-    };
-
-    try {
-      http.Response response = await http.get(Uri.parse(url), headers: headers);
-
-      if (response.statusCode == 200) {
-        print('respone : ${response.body}');
-        return response;
-      } else {
-        // 기타 오류
-        print('상품 데이터 불러오기 오류 ${response.statusCode}');
-        _showDialog('오류', '상품 데이터 불러오기 오류');
-        return Future.error('상품 데이터 불러오기 오류');
-      }
-    } catch (e) {
-      print("response : ${e}");
-      _showDialog('오류', '서버와 통신 중에 오류가 발생했습니다.');
-      return Future.error('서버와 통신 중에 오류가 발생했습니다.');
-    }
-  }
 }
 
 class CurveClipper extends CustomClipper<Path> {
