@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:where_shop_project/screen/main_page.dart';
+import 'package:where_shop_project/screen/store_add_item_page.dart';
 
 class LoginPage extends StatefulWidget {
   final String shopNum;
@@ -266,6 +267,9 @@ class _LoginPageState extends State<LoginPage> {
         // HTTP 응답 헤더 데이터
         Map<String, String> headers = response.headers;
 
+        Map res = jsonDecode(utf8.decode(response.bodyBytes))['data'];
+        print("res: $res");
+
         // token 값 추출
         String? refreshToken = headers['refreshtoken']?.replaceFirst('bearer ', "");
         String? accessToken = headers['authorization']?.replaceFirst('bearer ', "");
@@ -275,13 +279,24 @@ class _LoginPageState extends State<LoginPage> {
         _showDialog('로그인 성공', '환영합니다!');
         // 로그인 성공 시 처리할 로직 추가
         // 예: 홈 페이지로 이동 또는 다른 작업 수행
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    MainPage(widget.userroll, widget.shopNum)
-            )
-        );
+        if(res['userRole'] == 'SHOPOWNER'){
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      StoreAddItemPage(res['shopNum'].toString(), res['userRole'])
+              )
+          );
+        } else {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      MainPage(res['userRole'], res['shopNum'].toString())
+              )
+          );
+        }
+
       } else {
         // 기타 오류
         print("로그인 실패1 ${response.statusCode}");

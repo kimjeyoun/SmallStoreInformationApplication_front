@@ -71,17 +71,30 @@ class _StorePageState extends State<StorePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Container(
-                height: 200,
-                child: Image.asset(
-                  'asset/img/test_img.jpg',
-                  fit: BoxFit.cover,
+              if(shopData['shopPicture'] == null)
+                Container(
+                  height: 200,
+                  child: Image.asset(
+                    'asset/img/wordmark_blue.jpg',
+                    fit: BoxFit.cover,
+                  ),
+                  // Image.file(
+                  // File(받아온 가게 이미지),
+                  // fit: BoxFit.cover,
+                  // ),
+                )
+              else
+                Container(
+                  height: 200,
+                  child: Image.asset(
+                    '${shopData['shopPicture']}',
+                    fit: BoxFit.cover,
+                  ),
+                  // Image.file(
+                  // File(받아온 가게 이미지),
+                  // fit: BoxFit.cover,
+                  // ),
                 ),
-                // Image.file(
-                // File(받아온 가게 이미지),
-                // fit: BoxFit.cover,
-                // ),
-              ),
               Container(
                 decoration: BoxDecoration(
                     border: Border(
@@ -97,22 +110,40 @@ class _StorePageState extends State<StorePage> {
                       children: [
                         Row(
                           children: [
-                            Container(
-                              margin: EdgeInsets.all(5),
-                              width: 50,
-                              height: 70,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.blue, // 로고 색상
-                              ),
-                              // 가게 로고 이미지를 넣으세요.
-                              child: Image.asset(
-                                  'asset/img/logo.png'
+                            if(shopData['shopLogo'] == null)
+                              Container(
+                                margin: EdgeInsets.all(5),
+                                width: 50,
+                                height: 70,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.blue, // 로고 색상
+                                ),
+                                // 가게 로고 이미지를 넣으세요.
+                                child: Image.asset(
+                                    'asset/img/logo.png'
+                                )
+                                // Image.file(
+                                // File(가게 로고),
+                                //),
                               )
-                              // Image.file(
-                              // File(가게 로고),
-                              //),
-                            ),
+                            else
+                              Container(
+                                  margin: EdgeInsets.all(5),
+                                  width: 50,
+                                  height: 70,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.blue, // 로고 색상
+                                  ),
+                                  // 가게 로고 이미지를 넣으세요.
+                                  child: Image.asset(
+                                      '${shopData['shopLogo']}'
+                                  )
+                                // Image.file(
+                                // File(가게 로고),
+                                //),
+                              ),
                             SizedBox(width: 16),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,

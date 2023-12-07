@@ -223,17 +223,30 @@ class _HomeDivState extends State<HomeDiv> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 140,
-                height: 90,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8.0),
-                  image: DecorationImage(
-                    image: AssetImage('asset/img/test_img.jpg'),
-                    fit: BoxFit.cover,
+              if(shop['shopPicture'] == null)
+                Container(
+                  width: 140,
+                  height: 90,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.0),
+                    image: DecorationImage(
+                      image: AssetImage('asset/img/wordmark_blue.png'),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                )
+              else
+                Container(
+                  width: 140,
+                  height: 90,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.0),
+                    image: DecorationImage(
+                      image: AssetImage('${shop['shopPicture']}'),
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
-              ),
               SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -1,10 +1,10 @@
 import 'dart:io';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:where_shop_project/screen/login_page.dart';
 
 class StoreAddItemPage extends StatefulWidget {
   final String shopNumber;
@@ -34,32 +34,41 @@ class _StoreAddItemPageState extends State<StoreAddItemPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>(); // GlobalKey 생성
   int _currentIndex = 4;
 
-  List<Product> products = [];
+  late List<Product> products = [];
   final TextEditingController nameController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   bool showAddProductFields = false;
   String? selectedImagePath;
   XFile? imageFile;
-  String address = '경기도 군포시'; // 임시
 
-  late http.Response shopData; // 가게 데이터
-  late http.Response itemData; // 상품 데이터
+  late Map shopData; // 가게 데이터
+  late List itemData; // 상품 데이터
 
 
   void fetchAndDisplayShopData() async {
-    shopData = await _showShop(address);
+    shopData = await _showShop();
+    print("$shopData");
   }
 
   void fetchAndDisplayItemData() async {
     itemData = await _showItem(widget.shopNumber);
+    for(Map value in itemData){
+      products.add(Product(
+        name: value['itemName'],
+        price: value['itemPrice'],
+        description: value['itemInfo'],
+        imageUrl: value['itemImg'] ?? '',
+      ));
+    }
+
   }
 
   @override
   void initState() {
-    super.initState();
     fetchAndDisplayShopData();
     fetchAndDisplayItemData();
+    super.initState();
   }
 
   Future<void> _pickImageFromGallery() async {
@@ -95,29 +104,6 @@ class _StoreAddItemPageState extends State<StoreAddItemPage> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, String>> products2 = [
-      {
-        'itemName': '사과',
-        'itemPrice': '1500',
-        'itemInfo': '맛있는 사과',
-        'itemImg': 'url',
-        'shopNum': '1',
-      },
-      {
-        'itemName': '포도',
-        'itemPrice': '3000',
-        'itemInfo': '맛있는 포도',
-        'itemImg': 'url',
-        'shopNum': '1',
-      },
-      {
-        'itemName': '바나나',
-        'itemPrice': '2000',
-        'itemInfo': '맛있는 바나나',
-        'itemImg': 'url',
-        'shopNum': '1',
-      },
-    ];
 
     return GestureDetector(
       onTap: () {
@@ -130,17 +116,30 @@ class _StoreAddItemPageState extends State<StoreAddItemPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Container(
-                height: 200,
-                child: Image.asset(
-                  'asset/img/test_img.jpg',
-                  fit: BoxFit.cover,
+              if(shopData['shopPicture'] == null)
+                Container(
+                  height: 200,
+                  child: Image.asset(
+                    'asset/img/wordmark_blue.jpg',
+                    fit: BoxFit.cover,
+                  )
+                  // Image.file(
+                  // File(받아온 가게 이미지),
+                  // fit: BoxFit.cover,
+                  //),
                 )
-                // Image.file(
-                // File(받아온 가게 이미지),
-                // fit: BoxFit.cover,
-                //),
-              ),
+              else
+                Container(
+                    height: 200,
+                    child: Image.asset(
+                      '${shopData['shopPicture']}',
+                      fit: BoxFit.cover,
+                    )
+                  // Image.file(
+                  // File(받아온 가게 이미지),
+                  // fit: BoxFit.cover,
+                  //),
+                ),
               Container(
                 decoration: BoxDecoration(
                   border: Border(
@@ -156,34 +155,52 @@ class _StoreAddItemPageState extends State<StoreAddItemPage> {
                       children: [
                         Row(
                           children: [
-                            Container(
-                              margin: EdgeInsets.all(5),
-                              width: 50,
-                              height: 70,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.blue, // 로고 색상
-                              ),
-                              // 가게 로고 이미지를 넣으세요.
-                              child: Image.asset(
-                                'asset/img/logo.png'
+                            if(shopData['shopLogo'] == null)
+                              Container(
+                                margin: EdgeInsets.all(5),
+                                width: 50,
+                                height: 70,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.blue, // 로고 색상
+                                ),
+                                // 가게 로고 이미지를 넣으세요.
+                                child: Image.asset(
+                                  'asset/img/logo.png'
+                                )
+                                // Image.file(
+                                // File(가게 로고),
+                                //),
                               )
-                              // Image.file(
-                              // File(가게 로고),
-                              //),
-                            ),
+                            else
+                              Container(
+                                  margin: EdgeInsets.all(5),
+                                  width: 50,
+                                  height: 70,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.blue, // 로고 색상
+                                  ),
+                                  // 가게 로고 이미지를 넣으세요.
+                                  child: Image.asset(
+                                      '${shopData['shopLogo']}'
+                                  )
+                                // Image.file(
+                                // File(가게 로고),
+                                //),
+                              ),
                             SizedBox(width: 16),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  '가게 이름',
-                                  style: TextStyle(
+                                  '${shopData['shopName']}',
+                                  style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                Text('가게 주소'),
+                                Text('${shopData['shopAddress']}'),
                               ],
                             ),
                           ],
@@ -287,6 +304,8 @@ class _StoreAddItemPageState extends State<StoreAddItemPage> {
                       description: descriptionController.text,
                       imageUrl: selectedImagePath ?? '',
                     ));
+                    _itemRegist(nameController.text, priceController.text,
+                        descriptionController.text, selectedImagePath ?? '', widget.shopNumber);
                     // 입력 필드 초기화
                     nameController.clear();
                     priceController.clear();
@@ -294,8 +313,6 @@ class _StoreAddItemPageState extends State<StoreAddItemPage> {
                     // 이미지 초기화
                     selectedImagePath = null;
                   });
-                  _itemRegist(nameController.text, priceController.text,
-                    descriptionController.text, selectedImagePath!, widget.shopNumber);
                 },
                 style: ElevatedButton.styleFrom(
                   primary: Color(0xff4876F2), // 버튼의 배경색을 회색으로 설정
@@ -304,25 +321,6 @@ class _StoreAddItemPageState extends State<StoreAddItemPage> {
                   ),
                 ),
                 child: Text('상품 추가'),
-              ),
-              // 로그인 버튼
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              LoginPage(widget.shopNumber, widget.userroll)
-                      )
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: Color(0xff4876F2), // 버튼의 배경색을 회색으로 설정
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
-                child: Text('로그인 하기'),
               ),
               // 상품 목록 표시
               Container(
@@ -449,12 +447,50 @@ class _StoreAddItemPageState extends State<StoreAddItemPage> {
     );
   }
 
-  // 상품 등록
-  void _itemRegist(String name, String price, String info, String img, String shopNum) async {
-    String url = 'http://10.0.2.2:3000/item/registItem';
+  // 가게 데이터 불러오기
+  Future<Map> _showShop() async {
+    String url = 'http://10.0.2.2:3000/shop/myShop';
+    final storage = FlutterSecureStorage();
+    String? refreshToken = await storage.read(key: 'refreshToken');
+    String? accessToken = await storage.read(key: 'accessToken');
 
     Map<String, String> headers = {
       'Content-Type': 'application/json',
+      'Authorization': 'bearer $accessToken',
+      'refreshToken': 'bearer $refreshToken',
+    };
+
+    try {
+      http.Response response = await http.get(Uri.parse(url), headers: headers);
+
+      if (response.statusCode == 200) {
+        Map res = jsonDecode(utf8.decode(response.bodyBytes));
+        print('respone : ${res['data']}');
+        return res['data'];
+      } else {
+        // 기타 오류
+        print('가게 데이터 불러오기 오류 ${response.statusCode}');
+        _showDialog('오류', '가게 데이터 불러오기 오류');
+        return {};
+      }
+    } catch (e) {
+      print("response : ${e}");
+      _showDialog('오류', '서버와 통신 중에 오류가 발생했습니다.');
+      return {};
+    }
+  }
+
+  // 상품 등록
+  void _itemRegist(String name, String price, String info, String img, String shopNum) async {
+    String url = 'http://10.0.2.2:3000/item/registItem';
+    final storage = FlutterSecureStorage();
+    String? refreshToken = await storage.read(key: 'refreshToken');
+    String? accessToken = await storage.read(key: 'accessToken');
+
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'bearer $accessToken',
+      'refreshToken': 'bearer $refreshToken',
     };
 
     Map<String, String> body = {
@@ -465,6 +501,7 @@ class _StoreAddItemPageState extends State<StoreAddItemPage> {
       'shopNum': shopNum,
     };
 
+    print("body : $body");
     try {
       http.Response response = await http.post(Uri.parse(url),
           headers: headers, body: json.encode(body));
@@ -483,50 +520,30 @@ class _StoreAddItemPageState extends State<StoreAddItemPage> {
     }
   }
 
-  // 가게 데이터 불러오기
-  Future<http.Response> _showShop(String address) async {
-    String url = 'http://10.0.2.2:3000/shop/showShop';
-
-    Map<String, String> headers = {
-      'Content-Type': 'application/json',
-      'address': address,
-    };
-
-    try {
-      http.Response response = await http.get(Uri.parse(url), headers: headers);
-
-      if (response.statusCode == 200) {
-        print('respone : ${response.body}');
-        return response;
-      } else {
-        // 기타 오류
-        print('가게 데이터 불러오기 오류 ${response.statusCode}');
-        _showDialog('오류', '가게 데이터 불러오기 오류');
-        return Future.error('가게 데이터 불러오기 오류');
-      }
-    } catch (e) {
-      print("response : ${e}");
-      _showDialog('오류', '서버와 통신 중에 오류가 발생했습니다.');
-      return Future.error('서버와 통신 중에 오류가 발생했습니다.');
-    }
-  }
-
   // 상품 데이터 불러오기
-  Future<http.Response> _showItem(String shopNum) async {
-    String url = 'http://10.0.2.2:3000/item/showList';
+  Future<List> _showItem(String shopNum) async {
+    String url = 'http://10.0.2.2:3000/item/showList?shopNum=$shopNum';
+    final storage = FlutterSecureStorage();
+    String? refreshToken = await storage.read(key: 'refreshToken');
+    String? accessToken = await storage.read(key: 'accessToken');
 
     Map<String, String> headers = {
       'Content-Type': 'application/json',
-      'shopNum': shopNum,
+      'Authorization': 'bearer $accessToken',
+      'refreshToken': 'bearer $refreshToken',
     };
 
     try {
       http.Response response = await http.get(Uri.parse(url), headers: headers);
 
       if (response.statusCode == 200) {
-        print('respone : ${response.body}');
-        return response;
-      } else {
+        List res = jsonDecode(utf8.decode(response.bodyBytes))['data'];
+        print('respone : $res');
+        return res;
+      } else if(response.statusCode == 400){
+        _showDialog('완료', '상품 데이터가 없습니다.');
+        return [];
+      }else {
         // 기타 오류
         print('상품 데이터 불러오기 오류 ${response.statusCode}');
         _showDialog('오류', '상품 데이터 불러오기 오류');

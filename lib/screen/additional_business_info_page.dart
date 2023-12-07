@@ -347,13 +347,6 @@ class _AdditionalBusinessInfoPageState extends State<AdditionalBusinessInfoPage>
                                   categortNum, id, shopAddress, shopLogo,
                                   shopName, shopNumber, shopPhoneNumber, shopPicture
                                 );
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            StoreAddItemPage(shopNumber, widget.userroll)
-                                    )
-                                );
                               },
                               style: ElevatedButton.styleFrom(
                                 primary: Color(0xFF143386),
